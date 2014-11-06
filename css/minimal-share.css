@@ -1,0 +1,28 @@
+.minimal-share > * {
+  color: #fff;
+  padding: 0.4em 0.5em;
+  text-decoration: none;
+}
+
+.minimal-share > a:hover,
+.minimal-share > a:active,
+.minimal-share > a:focus {
+  color: #fff;
+  text-decoration: none;
+}
+
+.minimal-share > .facebook {
+  background-color: #3b5998;
+}
+
+.minimal-share > .twitter {
+  background-color: #0099d2;
+}
+
+.minimal-share > .gplus {
+  background-color: #db4a39;
+}
+
+label .minimal-share > * {
+  line-height: 2em;
+}

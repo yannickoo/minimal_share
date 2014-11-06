@@ -1,0 +1,274 @@
+<?php
+
+/**
+ * @file
+ * Main file of Minimal Share module.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function minimal_share_menu() {
+  $items = array();
+
+  $items['admin/config/user-interface/minimal-share'] = array(
+    'type' => MENU_NORMAL_ITEM,
+    'title' => 'Minimal Share',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('minimal_share_config_form'),
+    'access arguments' => array('administer minimal share'),
+    'file' => 'minimal_share.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function minimal_share_permission() {
+  return array(
+    'administer minimal share' => array(
+      'title' => t('Administer Minimal Share'),
+      'description' => t('Set global settings for Minimal Share.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_help().
+ */
+function minimal_share_help($path, $arg) {
+  if ($path == 'admin/config/user-interface/minimal-share') {
+    return '<p>' . t('Enable desired services and select the label. Do not getting confused by the different numbers they are just for demonstrating a count.') . '</p>';
+  }
+}
+
+/**
+ * Implements hook_field_extra_fields().
+ */
+function minimal_share_field_extra_fields() {
+  $extra = array();
+  $entity_info = entity_get_info();
+
+  foreach ($entity_info['node']['bundles'] as $bundle => $fields) {
+    $extra['node'][$bundle]['display']['minimal_share'] = array(
+      'label' => t('Minimal Share'),
+      'type' => 'hidden',
+    );
+  }
+
+  return $extra;
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function minimal_share_entity_view($entity, $type, $view_mode, $langcode) {
+  list(, , $bundle) = entity_extract_ids($type, $entity);
+  $extra_fields = field_extra_fields_get_display($type, $bundle, $view_mode);
+
+  if (isset($extra_fields['minimal_share']) && $extra_fields['minimal_share']['visible']) {
+    $entity->content['minimal_share'] = minimal_share_field($type, $entity);
+  }
+}
+
+/**
+ * Extra field callback.
+ */
+function minimal_share_field($entity_type, $entity) {
+  // Get all available service information.
+  $settings = variable_get('minimal_share', array());
+  $service_settings = isset($settings['services']) ? $settings['services'] : array();
+  $services = array_merge_recursive(minimal_share_services(), $service_settings);
+
+  $uri = entity_uri($entity_type, $entity);
+  $url = url($uri['path'], array('absolute' => TRUE)) . '/';
+  $title = entity_label($entity_type, $entity);
+
+  $element = array(
+    '#type' => 'html_tag',
+    '#tag' => 'p',
+    '#attributes' => array('class' => array('minimal-share')),
+    '#value' => '',
+    '#attached' => array(
+      'css' => array(
+        drupal_get_path('module', 'minimal_share') . '/css/minimal-share.css',
+      ),
+      'js' => array(
+        drupal_get_path('module', 'minimal_share') . '/js/minimal-share.js',
+      ),
+    ),
+  );
+
+  foreach ($services as $service_name => $service) {
+    if (isset($service['enable']) && !$service['enable']) {
+      continue;
+    }
+
+    $service['link'] = str_replace(array('[title]', '[url]'), array($title, $url), $service['link']);
+
+    // Set default label type.
+    if (!isset($service['label_type'])) {
+      $service['label_type'] = 'name';
+    }
+
+    // Load count only if necessary.
+    if ($service['label_type'] == 'count' || $service['label_type'] == 'name_count' || $service['label_type'] == 'custom' && strpos($service['custom'], '[count]') !== FALSE) {
+      $count = minimal_share_count($service_name, $url);
+    }
+
+    switch ($service['label_type']) {
+      case 'name':
+        $service['label'] = $service['title'];
+        break;
+      case 'count':
+        $service['label'] = $count;
+        break;
+      case 'name_count':
+        $service['label'] = '<span class="title">' . $service['title'] . '</span>';
+
+        if ($count || !$count && !$service['hide_zero']) {
+          $service['label'] .= ' <span class="count">(' . $count . ')</span>';
+        }
+        break;
+      case 'custom':
+        // Replace [count] token with real count.
+        if (strpos($service['custom'], '[count]') !== FALSE) {
+          $service['custom'] = str_replace('[count]', $count, $service['custom']);
+        }
+
+        $service['label'] = check_plain($service['custom']);
+        break;
+    }
+
+    $element['#value'] .= l($service['label'], $service['link'], array(
+      'html' => TRUE,
+      'attributes' => array(
+        'data-width' => $service['size']['width'],
+        'data-height' => $service['size']['height'],
+        'class' => array($service_name),
+      ),
+    )) . ' ';
+  }
+
+  return $element;
+}
+
+/**
+ * Service definitions.
+ *
+ * @return array
+ */
+function minimal_share_services() {
+  $services = array(
+    'facebook' => array(
+      'title' => t('Facebook'),
+      'link' => 'https://www.facebook.com/sharer.php?u=[url]&t=[title]',
+      'size' => array('width' => '600', 'height' => '500'),
+      'count_callback' => 'minimal_share_facebook_count',
+    ),
+    'twitter' => array(
+      'title' => t('Twitter'),
+      'link' => 'http://twitter.com/home?status=[title] - [url]',
+      'size' => array('width' => '600', 'height' => '260'),
+      'count_callback' => 'minimal_share_twitter_count',
+    ),
+    'gplus' => array(
+      'title' => t('Google+'),
+      'link' => 'https://plus.google.com/share?url=[url]',
+      'size' => array('width' => '600', 'height' => '400'),
+      'count_callback' => 'minimal_share_gplus_count',
+    ),
+  );
+
+  drupal_alter('minimal_share_services', $services);
+
+  return $services;
+}
+
+/**
+ * Load count for a URL.
+ *
+ * @param string $service_name
+ *   The service you want to request.
+ * @param string $url
+ *   The specific URL.
+ *
+ * @return integer
+ */
+function minimal_share_count($service_name, $url) {
+  $settings = variable_get('minimal_share', array());
+  $services = minimal_share_services();
+  $service = $services[$service_name];
+  $cid = 'minimal_share:' . md5($service_name . $url);
+  $data = &drupal_static(__FUNCTION__);
+
+  if (!isset($data)) {
+    $cache_lifetime = isset($settings['general']['cache_lifetime']) ? $settings['general']['cache_lifetime'] : 900;
+
+    if ($cache_lifetime) {
+      if ($cache = cache_get($cid)) {
+        $data = $cache->data;
+      }
+      else {
+        $data = function_exists($service['count_callback']) ? call_user_func_array($service['count_callback'], array($url)) : 0;
+
+        cache_set($cid, (int) $data, 'cache', time() + $cache_lifetime);
+      }
+    }
+    else {
+      $data = function_exists($service['count_callback']) ? call_user_func_array($service['count_callback'], array($url)) : 0;
+    }
+  }
+
+  return $data;
+}
+
+/**
+ * Count callback for Facebook.
+ *
+ * @param string $url
+ *   The requested URL.
+ *
+ * @return integer
+ */
+function minimal_share_facebook_count($url) {
+  $request = drupal_http_request('http://graph.facebook.com/?id=' . $url);
+  $data = json_decode($request->data);
+  $count = isset($data->shares) ? $data->shares : 0;
+
+  return $count;
+}
+
+/**
+ * Count callback for Twitter.
+ *
+ * @param string $url
+ *   The requested URL.
+ *
+ * @return int
+ */
+function minimal_share_twitter_count($url) {
+  $request = drupal_http_request('http://cdn.api.twitter.com/1/urls/count.json?url=' . $url);
+  $data = json_decode($request->data);
+  $count = isset($data->count) ? $data->count : 0;
+
+  return $count;
+}
+
+/**
+ * Count callback for Google+.
+ *
+ * @param string $url
+ *   The requested URL.
+ *
+ * @return int
+ */
+function minimal_share_gplus_count($url) {
+  $request = drupal_http_request('https://clients6.google.com/rpc', array('method' => 'POST', 'data' => '[{"method":"pos.plusones.get","id":"p","params":{"nolog":true,"id":"' . $url . '","source":"widget","userId":"@viewer","groupId":"@self"},"jsonrpc":"2.0","key":"p","apiVersion":"v1"}]'));
+  $data = json_decode($request->data);
+  $count = isset($data[0]->result->metadata->globalCounts->count) ? $data[0]->result->metadata->globalCounts->count : 0;
+
+  return $count;
+}
