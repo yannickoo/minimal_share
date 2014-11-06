@@ -14,7 +14,7 @@ function minimal_share_menu() {
   $items['admin/config/user-interface/minimal-share'] = array(
     'type' => MENU_NORMAL_ITEM,
     'title' => 'Minimal Share',
-    'description' => t('Configure appearance of sharing links.'),
+    'description' => 'Configure appearance of sharing links.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('minimal_share_config_form'),
     'access arguments' => array('administer minimal share'),
