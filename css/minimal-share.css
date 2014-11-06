@@ -2,6 +2,7 @@
   color: #fff;
   padding: 0.4em 0.5em;
   text-decoration: none;
+  white-space: pre;
 }
 
 .minimal-share > a:hover,
