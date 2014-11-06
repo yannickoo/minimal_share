@@ -13,7 +13,7 @@ function minimal_share_config_form($form, &$form_state) {
   $form['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share.css';
   $form['#attached']['js'][] = drupal_get_path('module', 'minimal_share') . '/js/minimal-share-admin.js';
 
-    // Get all available service information.
+  // Get all available service information.
   $settings = variable_get('minimal_share', array());
   $service_settings = isset($settings['services']) ? $settings['services'] : array();
   $services = array_merge_recursive(minimal_share_services(), $service_settings);
@@ -40,7 +40,7 @@ function minimal_share_config_form($form, &$form_state) {
     '#default_value' => isset($settings['general']['cache_lifetime']) ? $settings['general']['cache_lifetime'] : 900,
   );
 
-    $form['minimal_share']['general']['preview'] = array(
+  $form['minimal_share']['general']['preview'] = array(
     '#prefix' => '<div class="form-item">',
     '#markup' => '<label>' . t('Preview') . '</label><div id="minimal-share-preview"><p class="minimal-share"></p></div>',
     '#suffix' => '</div></div>',
@@ -69,7 +69,7 @@ function minimal_share_config_form($form, &$form_state) {
     );
 
     // We wrap radio labels to apply styles correctly.
-    $html_prefix = '<span class="minimal-share"><span class="'. $service_name . '">';
+    $html_prefix = '<span class="minimal-share"><span class="' . $service_name . '">';
     $html_suffix = '</span></span>';
 
     foreach ($label_options as &$option) {
@@ -135,4 +135,3 @@ function minimal_share_config_form($form, &$form_state) {
 
   return system_settings_form($form);
 }
-

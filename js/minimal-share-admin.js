@@ -42,9 +42,7 @@
 
         var $customLabels = $('input[name$="[custom]"]', this);
 
-        /**
-         * Override text of "Custom" radio label when custom label is used.
-         */
+        // Override text of "Custom" radio label when custom label is used.
         $customLabels.each(function() {
           var $this = $(this);
           var value = $this.val();
@@ -59,9 +57,7 @@
           }
         });
 
-        /**
-         * Update "Custom" radio label when custom label is changed.
-         */
+        // Update "Custom" radio label when custom label is changed.
         $customLabels.keyup(function(e) {
           var $this = $(this);
           var value = $this.val();
