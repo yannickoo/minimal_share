@@ -4,6 +4,11 @@
   padding: 0.4em 0.5em;
   text-decoration: none;
   white-space: pre;
+  margin-left: 0.3em;
+}
+
+.minimal-share > *:first-child {
+  margin-left: 0;
 }
 
 .minimal-share > a:hover,
