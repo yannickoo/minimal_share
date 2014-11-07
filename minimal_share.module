@@ -104,7 +104,9 @@ function minimal_share_field($entity_type, $entity) {
   );
 
   foreach ($services as $service_name => $service) {
-    if (isset($service['enable']) && !$service['enable']) {
+    $enabled = isset($service['enabled']) ? is_array($service['enabled']) ? $service['enabled'][1] : $service['enabled'] : TRUE;
+
+    if (!$enabled) {
       continue;
     }
 

@@ -49,15 +49,18 @@ function minimal_share_config_form($form, &$form_state) {
   );
 
   foreach ($services as $service_name => $service) {
+    // This property is an array after merging defaults with settings.
+    $enabled = isset($service['enabled']) ? is_array($service['enabled']) ? $service['enabled'][1] : $service['enabled'] : TRUE;
+
     $form['minimal_share']['services'][$service_name] = array(
       '#type' => 'fieldset',
       '#title' => $service['title'],
     );
 
-    $form['minimal_share']['services'][$service_name]['enable'] = array(
+    $form['minimal_share']['services'][$service_name]['enabled'] = array(
       '#type' => 'checkbox',
       '#title' => t('Enable'),
-      '#default_value' => isset($service['enable']) ? $service['enable'] : TRUE,
+      '#default_value' => $enabled,
     );
 
     // We use a random number for demonstrating the count labels.
@@ -99,7 +102,7 @@ function minimal_share_config_form($form, &$form_state) {
       '#default_value' => isset($service['label_type']) ? $service['label_type'] : 'name',
       '#states' => array(
         'visible' => array(
-          'input[name="minimal_share[services][' . $service_name . '][enable]"]' => array('checked' => TRUE),
+          'input[name="minimal_share[services][' . $service_name . '][enabled]"]' => array('checked' => TRUE),
         ),
       ),
     );
@@ -135,7 +138,7 @@ function minimal_share_config_form($form, &$form_state) {
       '#collapsed' => TRUE,
       '#states' => array(
         'visible' => array(
-          'input[name="minimal_share[services][' . $service_name . '][enable]"]' => array('checked' => TRUE),
+          'input[name="minimal_share[services][' . $service_name . '][enabled]"]' => array('checked' => TRUE),
         ),
       ),
     );
