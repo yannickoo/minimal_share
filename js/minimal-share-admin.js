@@ -143,8 +143,13 @@
      * Replace [count] token for label types.
      */
     replaceCountToken: function(value, $elm) {
-      if (value.indexOf('[count]')) {
+      if (value.indexOf('[count]') !== -1) {
         var $countRadio = $elm.parents('.fieldset-wrapper').find('[value="name_count"]');
+
+        if (!$countRadio.length) {
+          return value;
+        }
+
         var $countRadioLabel = $countRadio.siblings().children('span');
         var count = $countRadioLabel.text().match(/\d+/);
 
