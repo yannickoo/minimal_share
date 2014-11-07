@@ -14,36 +14,8 @@
           var fakeLinkLabel = $fakeLink.html();
           var fakeLinkType = $fakeLink.attr('class');
 
-          $preview.append('<span class="' + fakeLinkType + '">' + fakeLinkLabel + '</span> ');
+          $preview.append('<span class="' + fakeLinkType + '">' + fakeLinkLabel + '</span>');
         });
-
-        $preview.sortable().bind('dragstart', function(e) {
-          var $dragging = $(e.target);
-          var $placeholder = $('.sortable-placeholder');
-          var $style = $preview.children('style');
-          var css = '.sortable-placeholder { width: ' + $dragging.outerWidth() + 'px; height: ' + $dragging.outerHeight() + 'px; }';
-
-          if (!$style.length) {
-            $style = $('<style />').appendTo($preview);
-          }
-
-          $style.html(css);
-        }).bind('sortupdate', function(e, ui) {
-          var $this = $(this);
-          var $fakeLinks = $this.children('span');
-          var $weightFields = $('input[name$="[weight]"]');
-
-          $weightFields.each(function() {
-            var $this = $(this);
-            var nameParts = $this.attr('name').split('][')
-            var serviceType = nameParts[nameParts.length - 2];
-            var $fakeLink = $fakeLinks.filter('.' + serviceType);
-
-            var index = $fakeLinks.filter(':visible').index($fakeLink);
-
-            $this.val(index);
-          });
-        }).trigger('sortupdate');
 
         $selectedLabelType.bind('change', function() {
           var $this = $(this);
@@ -74,12 +46,52 @@
           var serviceType = nameParts[nameParts.length - 2];
 
           if (!enabled) {
-            $preview.find('> .' + serviceType).hide();
+            $preview.children('.' + serviceType).addClass('hide');
           }
           else {
-            $preview.append($preview.find('> .' + serviceType).show()).trigger('sortupdate');
+            $preview.append($preview.find('> .' + serviceType).removeClass('hide')).trigger('sortupdate');
           }
+
+          $preview.children('.last').removeClass('last');
+          $preview.children(':visible:last').addClass('last');
         }).trigger('change');
+
+        $preview.sortable().bind('dragstart', function(e) {
+          var $dragging = $(e.target);
+          var $placeholder = $('.sortable-placeholder');
+          var $style = $preview.children('style');
+          $dragging.removeClass('first');
+          var css = '.sortable-placeholder { width: ' + $dragging.width() + 'px; height: ' + $dragging.height() + 'px; background-color: ' + $dragging.css('background-color') + '; }';
+
+          if (!$style.length) {
+            $style = $('<style />').appendTo($preview);
+          }
+
+          $style.html(css);
+        }).bind('sortupdate', function(e, ui) {
+          var $this = $(this);
+          var $weightFields = $('input[name$="[weight]"]');
+          var $enabledServices = $preview.children(':not(.hide)');
+          var enabledServicesLength = $enabledServices.length - 1;
+
+          $weightFields.each(function() {
+            var $this = $(this);
+            var nameParts = $this.attr('name').split('][')
+            var serviceType = nameParts[nameParts.length - 2];
+            var $fakeLink = $preview.children('.' + serviceType);
+            var index = $enabledServices.index($fakeLink);
+
+            if (index === -1) {
+              index = enabledServicesLength + 1;
+              enabledServicesLength++;
+            }
+
+            $this.val(index);
+
+            $preview.children('.last').removeClass('last');
+            $preview.children(':visible:last').addClass('last');
+          });
+        }).trigger('sortupdate');
 
         var $customLabels = $('input[name$="[custom]"]', this);
 
@@ -89,10 +101,13 @@
           var value = $this.val();
           var $customRadio = $this.parents('.fieldset-wrapper').find('[value="custom"]');
           var $customRadioLabel = $customRadio.siblings().find('span > span');
+          var nameParts = $customRadio.attr('name').split('][');
+          var serviceType = nameParts[nameParts.length - 2];
 
           value = Drupal.behaviors.minimalShareAdmin.replaceCountToken(value, $this);
 
           if ($customRadio.attr('checked') && value) {
+            $preview.find('> .' + serviceType).text(value);
             $customRadioLabel.data('orig-title', $customRadioLabel.text());
             $customRadioLabel.text(value);
           }
@@ -104,6 +119,8 @@
           var value = $this.val();
           var $customRadio = $this.parents('.fieldset-wrapper').find('[value="custom"]');
           var $customRadioLabel = $customRadio.siblings().find('span > span');
+          var nameParts = $customRadio.attr('name').split('][');
+          var serviceType = nameParts[nameParts.length - 2];
 
           value = Drupal.behaviors.minimalShareAdmin.replaceCountToken(value, $this);
 
@@ -116,6 +133,7 @@
             $preview.children('.' + $customRadioLabel.attr('class')).text(value);
           }
           else {
+            $preview.find('> .' + serviceType).text($customRadioLabel.data('orig-title'));
             $customRadioLabel.text($customRadioLabel.data('orig-title'));
           }
         });
@@ -126,9 +144,9 @@
      */
     replaceCountToken: function(value, $elm) {
       if (value.indexOf('[count]')) {
-        var $countRadio = $elm.parents('.fieldset-wrapper').find('[value="count"]');
+        var $countRadio = $elm.parents('.fieldset-wrapper').find('[value="name_count"]');
         var $countRadioLabel = $countRadio.siblings().children('span');
-        var count = $countRadioLabel.text();
+        var count = $countRadioLabel.text().match(/\d+/);
 
         value = value.replace('[count]', count);
 
