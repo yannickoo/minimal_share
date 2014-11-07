@@ -188,18 +188,21 @@ function minimal_share_minimal_share_services() {
       'title' => t('Facebook'),
       'link' => 'https://www.facebook.com/sharer.php?u=[url]&t=[title]',
       'size' => array('width' => '600', 'height' => '500'),
+      'icon' => TRUE,
       'count_callback' => 'minimal_share_facebook_count',
     ),
     'twitter' => array(
       'title' => t('Twitter'),
       'link' => 'http://twitter.com/home?status=[title] - [url]',
       'size' => array('width' => '600', 'height' => '260'),
+      'icon' => TRUE,
       'count_callback' => 'minimal_share_twitter_count',
     ),
     'gplus' => array(
       'title' => t('Google+'),
       'link' => 'https://plus.google.com/share?url=[url]',
       'size' => array('width' => '600', 'height' => '400'),
+      'icon' => TRUE,
       'count_callback' => 'minimal_share_gplus_count',
     ),
     'linkedin' => array(
