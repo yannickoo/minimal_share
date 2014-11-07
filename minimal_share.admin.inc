@@ -131,7 +131,7 @@ function minimal_share_config_form($form, &$form_state) {
     );
 
     $form['minimal_share']['services'][$service_name]['override_style']['code'] = array(
-      '#prefix' => '<p>' . t('You can easily change the style via CSS.') . '</p>',
+      '#prefix' => '<p>' . t('Customize the style and copy the code.') . '</p>',
       '#markup' => '<style contenteditable style="display: block; white-space: pre;">.minimal-share > .' . $service_name . ' {
   background-color: #;
 }</style>',
