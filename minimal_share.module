@@ -148,14 +148,26 @@ function minimal_share_field($entity_type, $entity) {
         break;
     }
 
-    $element['#value'] .= l($service['label'], $service['link'], array(
+    $link_options = array(
       'html' => TRUE,
+      'external' => TRUE,
       'attributes' => array(
-        'data-width' => $service['size']['width'],
-        'data-height' => $service['size']['height'],
         'class' => array($service_name),
       ),
-    )) . ' ';
+    );
+
+    if ($service['label_type'] == 'icon') {
+      $link_options['attributes']['class'][] = 'icon';
+    }
+
+    // Add data attributes for size.
+    foreach (array('width', 'height') as $property) {
+      if (isset($service['size'][$property])) {
+        $link_options['attributes']['data-' . $property] = $service['size'][$property];
+      }
+    }
+
+    $element['#value'] .=  l($service['label'], $service['link'], $link_options) . ' ';
   }
 
   return $element;
