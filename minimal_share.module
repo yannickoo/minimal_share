@@ -85,8 +85,8 @@ function minimal_share_field($entity_type, $entity) {
   $services = array_merge_recursive(minimal_share_services(), $service_settings);
 
   $uri = entity_uri($entity_type, $entity);
-  $url = url($uri['path'], array('absolute' => TRUE)) . '/';
-  $title = entity_label($entity_type, $entity);
+  $url = drupal_encode_path(url($uri['path'], array('absolute' => TRUE)));
+  $title = drupal_encode_path(entity_label($entity_type, $entity));
 
   $element = array(
     '#type' => 'html_tag',
