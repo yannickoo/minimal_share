@@ -113,7 +113,7 @@ function minimal_share_field($entity_type, $entity) {
     }
 
     // Load count only if necessary.
-    if ($service['label_type'] == 'count' || $service['label_type'] == 'name_count' || $service['label_type'] == 'custom' && strpos($service['custom'], '[count]') !== FALSE) {
+    if ($service['label_type'] == 'name_count' || $service['label_type'] == 'custom' && strpos($service['custom'], '[count]') !== FALSE) {
       $count = minimal_share_count($service_name, $url);
     }
 
