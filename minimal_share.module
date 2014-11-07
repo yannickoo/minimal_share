@@ -348,9 +348,15 @@ function minimal_share_count($service_name, $url) {
  *   The amount of shares.
  */
 function minimal_share_facebook_count($url) {
+  $count = 0;
   $request = drupal_http_request('http://graph.facebook.com/?id=' . $url);
+
+  if (!isset($request->data)) {
+    return $count;
+  }
+
   $data = json_decode($request->data);
-  $count = isset($data->shares) ? $data->shares : 0;
+  $count = isset($data->shares) ? $data->shares : $count;
 
   return $count;
 }
@@ -365,8 +371,14 @@ function minimal_share_facebook_count($url) {
  *   The amount of shares.
  */
 function minimal_share_twitter_count($url) {
+  $count = 0;
   $request = drupal_http_request('http://cdn.api.twitter.com/1/urls/count.json?url=' . $url);
-  $data = json_decode($request->data);
+
+  if (!isset($request->data)) {
+    return $count;
+  }
+
+  $data = drupal_json_decode($request->data);
   $count = isset($data->count) ? $data->count : 0;
 
   return $count;
@@ -382,8 +394,14 @@ function minimal_share_twitter_count($url) {
  *   The amount of shares.
  */
 function minimal_share_gplus_count($url) {
+  $count = 0;
   $request = drupal_http_request('https://clients6.google.com/rpc', array('method' => 'POST', 'data' => '[{"method":"pos.plusones.get","id":"p","params":{"nolog":true,"id":"' . $url . '","source":"widget","userId":"@viewer","groupId":"@self"},"jsonrpc":"2.0","key":"p","apiVersion":"v1"}]'));
-  $data = json_decode($request->data);
+
+  if (!isset($request->data)) {
+    return $count;
+  }
+
+  $data = drupal_json_decode($request->data);
   $count = isset($data[0]->result->metadata->globalCounts->count) ? $data[0]->result->metadata->globalCounts->count : 0;
 
   return $count;
@@ -399,8 +417,14 @@ function minimal_share_gplus_count($url) {
  *   The amount of shares.
  */
 function minimal_share_linkedin_count($url) {
+  $count = 0;
   $request = drupal_http_request('http://www.linkedin.com/countserv/count/share?url=' . $url . '&format=json');
-  $data = json_decode($request->data);
+
+  if (!isset($request->data)) {
+    return $count;
+  }
+
+  $data = drupal_json_decode($request->data);
   $count = $data['count'];
 
   return $count;
