@@ -13,6 +13,10 @@
   text-decoration: none;
 }
 
+label .minimal-share > * {
+  line-height: 2em;
+}
+
 .minimal-share > .facebook {
   background-color: #3b5998;
 }
@@ -25,6 +29,19 @@
   background-color: #db4a39;
 }
 
-label .minimal-share > * {
-  line-height: 2em;
+.minimal-share > .linkedin {
+  background-color: #007bb6;
+}
+
+.minimal-share > .pinterest {
+  background-color: #cb2027;
+}
+
+.minimal-share > .tumblr {
+  background-color: #32506d;
+}
+
+.minimal-share > .email,
+.minimal-share > .print {
+  background-color: #666;
 }
