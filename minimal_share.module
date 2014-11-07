@@ -55,8 +55,7 @@ function minimal_share_field_extra_fields() {
   foreach ($entity_info['node']['bundles'] as $bundle => $fields) {
     $extra['node'][$bundle]['display']['minimal_share'] = array(
       'label' => t('Minimal Share'),
-      'type' => 'hidden',
-      'weight' => 11,
+      'weight' => 10,
     );
   }
 
