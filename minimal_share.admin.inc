@@ -56,7 +56,7 @@ function minimal_share_config_form($form, &$form_state) {
 
     // Add 'count' radio only if there is a count callback set.
     if (!isset($service['count_callback']) || !$service['count_callback']) {
-      unset($label_options['count']);
+      unset($label_options['name_count']);
     }
 
     // Remove icon feature if there is no icon for the current service.
