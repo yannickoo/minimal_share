@@ -24,6 +24,12 @@ function minimal_share_config_form($form, &$form_state) {
     '#type' => 'container',
   );
 
+  $form['minimal_share']['preview'] = array(
+    '#prefix' => '<div class="form-item">',
+    '#markup' => '<label>' . t('Preview') . '</label><div id="minimal-share-preview"><p class="minimal-share"></p></div>',
+    '#suffix' => '</div></div>',
+  );
+
   $form['minimal_share']['general'] = array(
     '#type' => 'fieldset',
     '#title' => t('General'),
@@ -40,12 +46,6 @@ function minimal_share_config_form($form, &$form_state) {
     '#options' => $period,
     '#description' => t('Cached counts will not be re-fetched until at least this much time has elapsed. When no cache lifetime is selected the page load takes much more time because counts are fetched on each request then.'),
     '#default_value' => isset($settings['general']['cache_lifetime']) ? $settings['general']['cache_lifetime'] : 900,
-  );
-
-  $form['minimal_share']['general']['preview'] = array(
-    '#prefix' => '<div class="form-item">',
-    '#markup' => '<label>' . t('Preview') . '</label><div id="minimal-share-preview"><p class="minimal-share"></p></div>',
-    '#suffix' => '</div></div>',
   );
 
   foreach ($services as $service_name => $service) {
