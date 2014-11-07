@@ -6,7 +6,24 @@ label .minimal-share > * {
   overflow: hidden;
 }
 
-#minimal-share-preview .minimal-share > [draggable] {
+#minimal-share-preview > .minimal-share > * {
+  margin-left: 0;
+  margin-right: 0.3em;
+}
+
+#minimal-share-preview > .minimal-share > *.last {
+  margin-right: 0;
+}
+
+#minimal-share-preview > .minimal-share > *.last + .sortable-placeholder {
+  margin-left: 0.3em;
+}
+
+#minimal-share-preview > .minimal-share > *.hide {
+  display: none;
+}
+
+#minimal-share-preview > .minimal-share > [draggable] {
   cursor: move;
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -16,10 +33,7 @@ label .minimal-share > * {
 }
 
 .sortable-placeholder {
-  background-color: transparent;
-  border: 1px dashed #ddd;
+  background-color: #ddd;
   display: inline-block;
   float: left;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
 }
