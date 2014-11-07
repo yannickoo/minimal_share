@@ -124,9 +124,9 @@ function minimal_share_field($entity_type, $entity) {
       case 'name':
         $service['label'] = $service['title'];
         break;
-
-      case 'count':
-        $service['label'] = $count;
+      case 'icon':
+        $service['label'] = '';
+        $element['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-icons.css';
         break;
 
       case 'name_count':

@@ -11,6 +11,7 @@
 function minimal_share_config_form($form, &$form_state) {
   $form['#tree'] = TRUE;
   $form['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share.css';
+  $form['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-icons.css';
   $form['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-admin.css';
   $form['#attached']['js'][] = drupal_get_path('module', 'minimal_share') . '/js/minimal-share-admin.js';
 
@@ -64,17 +65,30 @@ function minimal_share_config_form($form, &$form_state) {
 
     $label_options = array(
       'name' => $service['title'],
-      'count' => $count,
+      'icon' => '',
       'name_count' => $service['title'] . ' (' . $count . ')',
       'custom' => t('Custom'),
     );
 
-    // We wrap radio labels to apply styles correctly.
-    $html_prefix = '<span class="minimal-share"><span class="' . $service_name . '">';
-    $html_suffix = '</span></span>';
+    // Add 'count' radio only if there is a count callback set.
+    if (!isset($service['count_callback']) || !$service['count_callback']) {
+      unset($label_options['count']);
+    }
 
-    foreach ($label_options as &$option) {
-      $option = $html_prefix . $option . $html_suffix;
+    // Remove icon feature if there is no icon for the current service.
+    if (!isset($service['icon']) || !$service['icon']) {
+      unset($label_options['icon']);
+    }
+
+    foreach ($label_options as $key => &$option) {
+      $fake_link_class = $service_name;
+
+      if ($key == 'icon') {
+        $fake_link_class .= ' icon';
+      }
+
+      // We wrap radio labels to apply styles correctly.
+      $option = '<span class="minimal-share"><span class="' . $fake_link_class . '">' . $option . '</span></span>';
     }
 
     $form['minimal_share']['services'][$service_name]['label_type'] = array(
