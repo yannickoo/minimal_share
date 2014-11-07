@@ -79,9 +79,7 @@ function minimal_share_entity_view($entity, $type, $view_mode, $langcode) {
  */
 function minimal_share_field($entity_type, $entity) {
   // Get all available service information.
-  $settings = variable_get('minimal_share', array());
-  $service_settings = isset($settings['services']) ? $settings['services'] : array();
-  $services = array_merge_recursive(minimal_share_services(), $service_settings);
+  $settings = minimal_share_settings();
 
   $uri = entity_uri($entity_type, $entity);
   $url = drupal_encode_path(url($uri['path'], array('absolute' => TRUE)));
@@ -102,10 +100,8 @@ function minimal_share_field($entity_type, $entity) {
     ),
   );
 
-  foreach ($services as $service_name => $service) {
-    $enabled = isset($service['enabled']) ? is_array($service['enabled']) ? $service['enabled'][1] : $service['enabled'] : TRUE;
-
-    if (!$enabled) {
+  foreach ($settings['services'] as $service_name => $service) {
+    if (!$service['enabled']) {
       continue;
     }
 
@@ -254,6 +250,48 @@ function minimal_share_minimal_share_services() {
   );
 
   return $services;
+}
+
+/**
+ * Get Minimal Share settings.
+ *
+ * @return array
+ *   Contains settings.
+ */
+function minimal_share_settings() {
+  $settings = variable_get('minimal_share', array());
+  $service_settings = isset($settings['services']) ? $settings['services'] : array();
+  $settings['services'] = array_merge_recursive(minimal_share_services(), $service_settings);
+
+  foreach ($settings['services'] as &$service) {
+    if (isset($service['enabled'])) {
+      if (is_array($service['enabled'])) {
+        $service['enabled'] = $service['enabled'][1];
+      }
+    }
+    else {
+      $service['enabled'] = TRUE;
+    }
+  }
+
+  uasort($settings['services'], 'minimal_share_sort_by_weight');
+  uasort($settings['services'], 'minimal_share_sort_by_enabled');
+
+  return $settings;
+}
+
+/**
+ * Sorting by weight function.
+ */
+function minimal_share_sort_by_weight($a, $b) {
+  return strcmp($a['weight'], $b['weight']);
+}
+
+/**
+ * Sorting by enabled function.
+ */
+function minimal_share_sort_by_enabled($a, $b) {
+  return strcmp($b['enabled'], $a['enabled']);
 }
 
 /**

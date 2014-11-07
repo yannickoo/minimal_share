@@ -17,6 +17,34 @@
           $preview.append('<span class="' + fakeLinkType + '">' + fakeLinkLabel + '</span> ');
         });
 
+        $preview.sortable().bind('dragstart', function(e) {
+          var $dragging = $(e.target);
+          var $placeholder = $('.sortable-placeholder');
+          var $style = $preview.children('style');
+          var css = '.sortable-placeholder { width: ' + $dragging.outerWidth() + 'px; height: ' + $dragging.outerHeight() + 'px; }';
+
+          if (!$style.length) {
+            $style = $('<style />').appendTo($preview);
+          }
+
+          $style.html(css);
+        }).bind('sortupdate', function(e, ui) {
+          var $this = $(this);
+          var $fakeLinks = $this.children('span');
+          var $weightFields = $('input[name$="[weight]"]');
+
+          $weightFields.each(function() {
+            var $this = $(this);
+            var nameParts = $this.attr('name').split('][')
+            var serviceType = nameParts[nameParts.length - 2];
+            var $fakeLink = $fakeLinks.filter('.' + serviceType);
+
+            var index = $fakeLinks.filter(':visible').index($fakeLink);
+
+            $this.val(index);
+          });
+        }).trigger('sortupdate');
+
         $selectedLabelType.bind('change', function() {
           var $this = $(this);
           var $label = $this.siblings();
@@ -49,7 +77,7 @@
             $preview.find('> .' + serviceType).hide();
           }
           else {
-            $preview.find('> .' + serviceType).show();
+            $preview.append($preview.find('> .' + serviceType).show()).trigger('sortupdate');
           }
         }).trigger('change');
 

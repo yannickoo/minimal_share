@@ -13,12 +13,11 @@ function minimal_share_config_form($form, &$form_state) {
   $form['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share.css';
   $form['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-icons.css';
   $form['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-admin.css';
+  $form['#attached']['js'][] = drupal_get_path('module', 'minimal_share') . '/libs/html5sortable/jquery.sortable.js';
   $form['#attached']['js'][] = drupal_get_path('module', 'minimal_share') . '/js/minimal-share-admin.js';
 
   // Get all available service information.
-  $settings = variable_get('minimal_share', array());
-  $service_settings = isset($settings['services']) ? $settings['services'] : array();
-  $services = array_merge_recursive(minimal_share_services(), $service_settings);
+  $settings = minimal_share_settings();
 
   $form['minimal_share'] = array(
     '#type' => 'container',
@@ -48,7 +47,7 @@ function minimal_share_config_form($form, &$form_state) {
     '#default_value' => isset($settings['general']['cache_lifetime']) ? $settings['general']['cache_lifetime'] : 900,
   );
 
-  foreach ($services as $service_name => $service) {
+  foreach ($settings['services'] as $service_name => $service) {
     // This property is an array after merging defaults with settings.
     $enabled = isset($service['enabled']) ? is_array($service['enabled']) ? $service['enabled'][1] : $service['enabled'] : TRUE;
 
@@ -131,9 +130,13 @@ function minimal_share_config_form($form, &$form_state) {
       ),
     );
 
-    $form['minimal_share']['services'][$service_name]['override_colors'] = array(
+    $form['minimal_share']['services'][$service_name]['weight'] = array(
+      '#type' => 'hidden',
+    );
+
+    $form['minimal_share']['services'][$service_name]['override_style'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Override colors'),
+      '#title' => t('Override style'),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       '#states' => array(
@@ -143,11 +146,11 @@ function minimal_share_config_form($form, &$form_state) {
       ),
     );
 
-    $form['minimal_share']['services'][$service_name]['override_colors']['code'] = array(
-      '#prefix' => '<p>' . t('You can easily change colors via CSS:') . '</p>',
-      '#markup' => '<code style="white-space: pre;">.minimal-share > .' . $service_name . ' {
-  background-color: #000;
-}</code>',
+    $form['minimal_share']['services'][$service_name]['override_style']['code'] = array(
+      '#prefix' => '<p>' . t('You can easily change the style via CSS.') . '</p>',
+      '#markup' => '<style contenteditable style="display: block; white-space: pre;">.minimal-share > .' . $service_name . ' {
+  background-color: #;
+}</style>',
     );
   }
 

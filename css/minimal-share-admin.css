@@ -1,3 +1,25 @@
 label .minimal-share > * {
   line-height: 2em;
 }
+
+#minimal-share-preview > .minimal-share {
+  overflow: hidden;
+}
+
+#minimal-share-preview .minimal-share > [draggable] {
+  cursor: move;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  float: left;
+}
+
+.sortable-placeholder {
+  background-color: transparent;
+  border: 1px dashed #ddd;
+  display: inline-block;
+  float: left;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
