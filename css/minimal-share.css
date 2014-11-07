@@ -13,10 +13,6 @@
   text-decoration: none;
 }
 
-label .minimal-share > * {
-  line-height: 2em;
-}
-
 .minimal-share > .facebook {
   background-color: #3b5998;
 }
