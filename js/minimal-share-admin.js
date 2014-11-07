@@ -9,22 +9,35 @@
         $selectedLabelType.filter(':checked').once('minimal-share', function() {
           var $this = $(this);
           var $label = $this.siblings();
-          var label = $label.text();
-          var serviceType = $label.find('span > span').attr('class');
+          var $wrapper = $label.children('span');
+          var $fakeLink = $wrapper.children('span');
+          var fakeLinkLabel = $fakeLink.html();
+          var fakeLinkType = $fakeLink.attr('class');
 
-          $preview.append('<span class="' + serviceType + '">' + label + '</span> ');
+          $preview.append('<span class="' + fakeLinkType + '">' + fakeLinkLabel + '</span> ');
         });
 
         $selectedLabelType.bind('change', function() {
           var $this = $(this);
           var $label = $this.siblings();
-          var label = $label.text();
-          var serviceType = $label.find('span > span').attr('class');
+          var $wrapper = $label.children('span');
+          var $fakeLink = $wrapper.children('span');
+          var fakeLinkLabel = $fakeLink.html();
+          var fakeLinkType = $fakeLink.attr('class').split(' ');
+          var $fakeLinkPreview = $preview.children('.' + fakeLinkType[0]);
 
-          $preview.find('> .' + serviceType).text(label);
+          // Add or remove the icon class base on the new selection.
+          if (typeof fakeLinkType[1] !== 'undefined') {
+            $fakeLinkPreview.addClass(fakeLinkType[1]);
+          }
+          else {
+            $fakeLinkPreview.attr('class', fakeLinkType);
+          }
+
+          $fakeLinkPreview.text(fakeLinkLabel);
         });
 
-        var $enableCheckboxes = $('input[name$="[enable]"');
+        var $enableCheckboxes = $('input[name$="[enabled]"');
 
         $enableCheckboxes.change(function() {
           var $this = $(this);
@@ -47,7 +60,7 @@
           var $this = $(this);
           var value = $this.val();
           var $customRadio = $this.parents('.fieldset-wrapper').find('[value="custom"]');
-          var $customRadioLabel = $customRadio.siblings().find('> span > span');
+          var $customRadioLabel = $customRadio.siblings().find('span > span');
 
           value = Drupal.behaviors.minimalShareAdmin.replaceCountToken(value, $this);
 
@@ -62,7 +75,7 @@
           var $this = $(this);
           var value = $this.val();
           var $customRadio = $this.parents('.fieldset-wrapper').find('[value="custom"]');
-          var $customRadioLabel = $customRadio.siblings().find('> span > span');
+          var $customRadioLabel = $customRadio.siblings().find('span > span');
 
           value = Drupal.behaviors.minimalShareAdmin.replaceCountToken(value, $this);
 
@@ -72,7 +85,7 @@
 
           if (value) {
             $customRadioLabel.text(value);
-            $preview.find('> .' + $customRadioLabel.attr('class')).text(value);
+            $preview.children('.' + $customRadioLabel.attr('class')).text(value);
           }
           else {
             $customRadioLabel.text($customRadioLabel.data('orig-title'));
@@ -86,7 +99,7 @@
     replaceCountToken: function(value, $elm) {
       if (value.indexOf('[count]')) {
         var $countRadio = $elm.parents('.fieldset-wrapper').find('[value="count"]');
-        var $countRadioLabel = $countRadio.siblings().find('> span > span');
+        var $countRadioLabel = $countRadio.siblings().children('span');
         var count = $countRadioLabel.text();
 
         value = value.replace('[count]', count);
