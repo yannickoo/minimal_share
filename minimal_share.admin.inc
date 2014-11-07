@@ -95,6 +95,7 @@ function minimal_share_config_form($form, &$form_state) {
       '#default_value' => isset($service['hide_zero']) ? $service['hide_zero'] : 1,
       '#states' => array(
         'visible' => array(
+          'input[name="minimal_share[services][' . $service_name . '][enabled]"]' => array('checked' => TRUE),
           'input[name="minimal_share[services][' . $service_name . '][label_type]"]' => array('value' => 'name_count'),
         ),
       ),
@@ -107,6 +108,7 @@ function minimal_share_config_form($form, &$form_state) {
       '#default_value' => isset($service['custom']) ? $service['custom'] : '',
       '#states' => array(
         'visible' => array(
+          'input[name="minimal_share[services][' . $service_name . '][enabled]"]' => array('checked' => TRUE),
           'input[name="minimal_share[services][' . $service_name . '][label_type]"]' => array('value' => 'custom'),
         ),
       ),
