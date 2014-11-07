@@ -167,6 +167,21 @@ function minimal_share_field($entity_type, $entity) {
  *   An array with all service definitions.
  */
 function minimal_share_services() {
+  $services = array();
+
+  foreach (module_implements('minimal_share_services') as $module) {
+    $services += module_invoke($module, 'minimal_share_services');
+  }
+
+  drupal_alter('minimal_share_services', $services);
+
+  return $services;
+}
+
+/**
+ * Implements hook_minimal_share_services().
+ */
+function minimal_share_minimal_share_services() {
   $services = array(
     'facebook' => array(
       'title' => t('Facebook'),
@@ -221,8 +236,6 @@ function minimal_share_services() {
       'icon' => TRUE,
     ),
   );
-
-  drupal_alter('minimal_share_services', $services);
 
   return $services;
 }
