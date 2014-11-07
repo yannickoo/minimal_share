@@ -163,7 +163,7 @@ function minimal_share_field($entity_type, $entity) {
       }
     }
 
-    $element['#value'] .=  l($service['label'], $service['link'], $link_options) . ' ';
+    $element['#value'] .= l($service['label'], $service['link'], $link_options);
   }
 
   return $element;
