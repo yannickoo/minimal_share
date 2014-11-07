@@ -29,24 +29,6 @@ function minimal_share_config_form($form, &$form_state) {
     '#suffix' => '</div></div>',
   );
 
-  $form['minimal_share']['general'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('General'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-
-  $period = drupal_map_assoc(array(0, 60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400), 'format_interval');
-  $period[0] = '<' . t('none') . '>';
-
-  $form['minimal_share']['general']['cache_lifetime'] = array(
-    '#type' => 'select',
-    '#title' => t('Cache lifetime'),
-    '#options' => $period,
-    '#description' => t('Cached counts will not be re-fetched until at least this much time has elapsed. When no cache lifetime is selected the page load takes much more time because counts are fetched on each request then.'),
-    '#default_value' => isset($settings['general']['cache_lifetime']) ? $settings['general']['cache_lifetime'] : 900,
-  );
-
   foreach ($settings['services'] as $service_name => $service) {
     // This property is an array after merging defaults with settings.
     $enabled = isset($service['enabled']) ? is_array($service['enabled']) ? $service['enabled'][1] : $service['enabled'] : TRUE;
@@ -153,6 +135,24 @@ function minimal_share_config_form($form, &$form_state) {
 }</style>',
     );
   }
+
+  $form['minimal_share']['advanced'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Advanced'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $period = drupal_map_assoc(array(0, 60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400), 'format_interval');
+  $period[0] = '<' . t('none') . '>';
+
+  $form['minimal_share']['advanced']['cache_lifetime'] = array(
+    '#type' => 'select',
+    '#title' => t('Cache lifetime'),
+    '#options' => $period,
+    '#description' => t('Cached counts will not be re-fetched until at least this much time has elapsed. When no cache lifetime is selected the page load takes much more time because counts are fetched on each request then.'),
+    '#default_value' => isset($settings['advanced']['cache_lifetime']) ? $settings['advanced']['cache_lifetime'] : 900,
+  );
 
   return system_settings_form($form);
 }
