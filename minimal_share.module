@@ -263,7 +263,11 @@ function minimal_share_settings() {
   $service_settings = isset($settings['services']) ? $settings['services'] : array();
   $settings['services'] = array_merge_recursive(minimal_share_services(), $service_settings);
 
-  foreach ($settings['services'] as &$service) {
+  foreach ($settings['services'] as $key => &$service) {
+    if (!isset($service['weight'])) {
+      $service['weight'] = $key;
+    }
+
     if (isset($service['enabled'])) {
       if (is_array($service['enabled'])) {
         $service['enabled'] = $service['enabled'][1];
