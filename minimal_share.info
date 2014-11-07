@@ -1,4 +1,4 @@
 name = Minimal Share
-description = Provides minimal share buttons for Facebook, Twitter and Google+.
+description = Provides minimal share buttons for several services.
 core = 7.x
 configure = admin/config/user-interface/minimal-share
