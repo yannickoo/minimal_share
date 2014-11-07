@@ -334,3 +334,20 @@ function minimal_share_gplus_count($url) {
 
   return $count;
 }
+
+/**
+ * Count callback for LinkedIn.
+ *
+ * @param string $url
+ *   The requested URL.
+ *
+ * @return int
+ *   The amount of shares.
+ */
+function minimal_share_linkedin_count($url) {
+  $request = drupal_http_request('http://www.linkedin.com/countserv/count/share?url=' . $url . '&format=json');
+  $data = json_decode($request->data);
+  $count = $data['count'];
+
+  return $count;
+}
