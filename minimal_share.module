@@ -256,6 +256,7 @@ function minimal_share_count($service_name, $url) {
   $services = minimal_share_services();
   $service = $services[$service_name];
   $cid = 'minimal_share:' . md5($service_name . $url);
+  $count_fetch = FALSE;
   $data = &drupal_static(__FUNCTION__);
 
   if (!isset($data)) {
@@ -266,14 +267,18 @@ function minimal_share_count($service_name, $url) {
         $data = $cache->data;
       }
       else {
-        $data = function_exists($service['count_callback']) ? call_user_func_array($service['count_callback'], array($url)) : 0;
+        $count_fetch = TRUE;
 
         cache_set($cid, (int) $data, 'cache', time() + $cache_lifetime);
       }
     }
     else {
-      $data = function_exists($service['count_callback']) ? call_user_func_array($service['count_callback'], array($url)) : 0;
+      $count_fetch = TRUE;
     }
+  }
+
+  if ($count_fetch) {
+    $data = function_exists($service['count_callback']) ? call_user_func_array($service['count_callback'], array($url)) : 0;
   }
 
   return $data;
