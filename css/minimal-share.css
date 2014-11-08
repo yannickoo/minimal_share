@@ -1,10 +1,11 @@
 .minimal-share > * {
+  display: inline-block;
+  margin-left: 0.3em;
+  padding: 0.4em 0.5em;
   background-color: #ddd;
   color: #fff;
-  padding: 0.4em 0.5em;
   text-decoration: none;
   white-space: pre;
-  margin-left: 0.3em;
 }
 
 .minimal-share > *:first-child {
