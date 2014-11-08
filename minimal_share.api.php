@@ -10,7 +10,7 @@
  *
  * This hook is invoked by minimal_share_services().
  *
- * @return $settings
+ * @return array
  *   An associative array of all defined services.
  */
 function hook_minimal_share_services() {
@@ -31,7 +31,7 @@ function hook_minimal_share_services() {
  *
  * This hook is invoked by minimal_share_services().
  *
- * @param $settings
+ * @param array $settings
  *   An associative array of all defined services.
  */
 function hook_minimal_share_services_alter(&$services) {
