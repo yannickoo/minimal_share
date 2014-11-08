@@ -10,10 +10,10 @@
  */
 function minimal_share_config_form($form, &$form_state) {
   $form['#tree'] = TRUE;
+  $form['#attached']['library'][] = array('system', 'ui.sortable');
   $form['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share.css';
   $form['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-icons.css';
   $form['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-admin.css';
-  $form['#attached']['js'][] = drupal_get_path('module', 'minimal_share') . '/libs/html5sortable/jquery.sortable.js';
   $form['#attached']['js'][] = drupal_get_path('module', 'minimal_share') . '/js/minimal-share-admin.js';
 
   // Get all available service information.

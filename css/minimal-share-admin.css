@@ -15,7 +15,7 @@ label .minimal-share > * {
   margin-right: 0;
 }
 
-#minimal-share-preview > .minimal-share > *.last + .sortable-placeholder {
+#minimal-share-preview > .minimal-share > *.last + .ui-sortable-placeholder {
   margin-left: 0.3em;
 }
 
@@ -23,7 +23,7 @@ label .minimal-share > * {
   display: none;
 }
 
-#minimal-share-preview > .minimal-share > [draggable] {
+#minimal-share-preview > .minimal-share.ui-sortable > * {
   cursor: move;
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -32,7 +32,7 @@ label .minimal-share > * {
   float: left;
 }
 
-.sortable-placeholder {
+.ui-sortable-placeholder {
   background-color: #ddd;
   display: inline-block;
   float: left;

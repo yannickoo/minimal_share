@@ -56,12 +56,12 @@
           $preview.children(':visible:last').addClass('last');
         }).trigger('change');
 
-        $preview.sortable().bind('dragstart', function(e) {
+        $preview.sortable().bind('sortstart', function(e, ui) {
           var $dragging = $(e.target);
           var $placeholder = $('.sortable-placeholder');
           var $style = $preview.children('style');
           $dragging.removeClass('first');
-          var css = '.sortable-placeholder { width: ' + $dragging.width() + 'px; height: ' + $dragging.height() + 'px; background-color: ' + $dragging.css('background-color') + '; }';
+          var css = '.ui-sortable-placeholder { background-color: ' + $dragging.css('background-color') + '; visibility: visible; }';
 
           if (!$style.length) {
             $style = $('<style />').appendTo($preview);
