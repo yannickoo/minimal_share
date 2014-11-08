@@ -103,11 +103,12 @@
           var $customRadioLabel = $customRadio.siblings().find('span > span');
           var nameParts = $customRadio.attr('name').split('][');
           var serviceType = nameParts[nameParts.length - 2];
+          var $previewFakeLink = $preview.children('.' + serviceType);
 
           value = Drupal.behaviors.minimalShareAdmin.replaceCountToken(value, $this);
 
           if ($customRadio.attr('checked') && value) {
-            $preview.find('> .' + serviceType).text(value);
+            $previewFakeLink.text(value);
             $customRadioLabel.data('orig-title', $customRadioLabel.text());
             $customRadioLabel.text(value);
           }
@@ -121,6 +122,7 @@
           var $customRadioLabel = $customRadio.siblings().find('span > span');
           var nameParts = $customRadio.attr('name').split('][');
           var serviceType = nameParts[nameParts.length - 2];
+          var $previewFakeLink = $preview.children('.' + serviceType);
 
           value = Drupal.behaviors.minimalShareAdmin.replaceCountToken(value, $this);
 
@@ -130,11 +132,11 @@
 
           if (value) {
             $customRadioLabel.text(value);
-            $preview.children('.' + $customRadioLabel.attr('class')).text(value);
+            $previewFakeLink.text(value);
           }
           else {
-            $preview.find('> .' + serviceType).text($customRadioLabel.data('orig-title'));
             $customRadioLabel.text($customRadioLabel.data('orig-title'));
+            $previewFakeLink.text($customRadioLabel.data('orig-title'));
           }
         });
       });
@@ -155,8 +157,9 @@
 
         value = value.replace('[count]', count);
 
-        return value;
       }
+
+      return value;
     }
   };
 
