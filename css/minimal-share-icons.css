@@ -11,11 +11,34 @@
   font-style: normal;
 }
 
-.minimal-share > .icon.facebook:before { content: '\e800'; } /* '' */
-.minimal-share > .icon.twitter:before { content: '\e802'; } /* '' */
-.minimal-share > .icon.gplus:before { content: '\e803'; } /* '' */
-.minimal-share > .icon.linkedin:before { content: '\e804'; } /* '' */
-.minimal-share > .icon.pinterest:before { content: '\e805'; } /* '' */
-.minimal-share > .icon.tumblr:before { content: '\e806'; } /* '' */
-.minimal-share > .icon.email:before { content: '\e801'; } /* '' */
-.minimal-share > .icon.print:before { content: '\e807'; } /* '' */
+.minimal-share > .icon.facebook:before {
+  content: '\e800';
+}
+
+.minimal-share > .icon.twitter:before {
+  content: '\e802';
+}
+
+.minimal-share > .icon.gplus:before {
+  content: '\e803';
+}
+
+.minimal-share > .icon.linkedin:before {
+  content: '\e804';
+}
+
+.minimal-share > .icon.pinterest:before {
+  content: '\e805';
+}
+
+.minimal-share > .icon.tumblr:before {
+  content: '\e806';
+}
+
+.minimal-share > .icon.email:before {
+  content: '\e801';
+}
+
+.minimal-share > .icon.print:before {
+  content: '\e807';
+}
