@@ -37,3 +37,7 @@ label .minimal-share > * {
   display: inline-block;
   float: left;
 }
+
+.minimal-share > style {
+  display: none;
+}
