@@ -101,7 +101,7 @@ function minimal_share_config_form($form, &$form_state) {
     $form['minimal_share']['services'][$service_name]['custom'] = array(
       '#type' => 'textfield',
       '#title' => t('Custom label'),
-      '#description' => isset($service['count_callback']) && $service['count_callback'] ? t('You can use <code>[count]</code> to get the count number.') : '',
+      '#description' => minimal_share_count_callback_exists($service) ? t('You can use <code>[count]</code> to get the count number.') : '',
       '#default_value' => isset($service['custom']) ? $service['custom'] : '',
       '#states' => array(
         'visible' => array(

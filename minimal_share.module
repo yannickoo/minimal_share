@@ -136,7 +136,7 @@ function minimal_share_field($entity_type, $entity) {
 
       case 'custom':
         // Replace [count] token with real count.
-        if (strpos($service['custom'], '[count]') !== FALSE) {
+        if (minimal_share_count_callback_exists($service) && strpos($service['custom'], '[count]') !== FALSE) {
           $service['custom'] = str_replace('[count]', $count, $service['custom']);
         }
 
@@ -342,6 +342,18 @@ function minimal_share_count($service_name, $url) {
 
   return $data[$cid];
 }
+
+/**
+ * Check whether count callback is defined and exists.
+ *
+ * @param array $service
+ *   Contains service settings.
+ *
+ * @return bool
+ *   Whether count callback exists and is valid or not.
+ */
+function minimal_share_count_callback_exists($service) {
+  return isset($service['count_callback']) && function_exists($service['count_callback']) ? TRUE : FALSE;
 }
 
 /**
