@@ -105,7 +105,7 @@ function minimal_share_field($entity_type, $entity) {
       continue;
     }
 
-    $service['link'] = str_replace(array('[title]', '[url]'), array($title, $url), $service['link']);
+    $service['url'] = str_replace(array('[title]', '[url]'), array($title, $url), $service['url']);
 
     // Set default label type.
     if (!isset($service['label_type'])) {
@@ -163,7 +163,7 @@ function minimal_share_field($entity_type, $entity) {
       }
     }
 
-    $element['#value'] .= l($service['label'], $service['link'], $link_options);
+    $element['#value'] .= l($service['label'], $service['url'], $link_options);
   }
 
   return $element;
@@ -194,21 +194,21 @@ function minimal_share_minimal_share_services() {
   $services = array(
     'facebook' => array(
       'title' => t('Facebook'),
-      'link' => 'https://www.facebook.com/sharer.php?u=[url]&t=[title]',
+      'url' => 'https://www.facebook.com/sharer.php?u=[url]&t=[title]',
       'size' => array('width' => '600', 'height' => '500'),
       'icon' => TRUE,
       'count_callback' => 'minimal_share_facebook_count',
     ),
     'twitter' => array(
       'title' => t('Twitter'),
-      'link' => 'http://twitter.com/home?status=[title]%20-%20[url]',
+      'url' => 'http://twitter.com/home?status=[title]%20-%20[url]',
       'size' => array('width' => '600', 'height' => '260'),
       'icon' => TRUE,
       'count_callback' => 'minimal_share_twitter_count',
     ),
     'gplus' => array(
       'title' => t('Google+'),
-      'link' => 'https://plus.google.com/share?url=[url]',
+      'url' => 'https://plus.google.com/share?url=[url]',
       'size' => array('width' => '600', 'height' => '400'),
       'icon' => TRUE,
       'count_callback' => 'minimal_share_gplus_count',
@@ -216,7 +216,7 @@ function minimal_share_minimal_share_services() {
     'linkedin' => array(
       'enabled' => FALSE,
       'title' => t('LinkedIn'),
-      'link' => 'http://www.linkedin.com/shareArticle?mini=true&url=[url]&title[title]',
+      'url' => 'http://www.linkedin.com/shareArticle?mini=true&url=[url]&title[title]',
       'size' => array('width' => '520', 'height' => '570'),
       'icon' => TRUE,
       'count_callback' => 'minimal_share_linkedin_count',
@@ -224,27 +224,27 @@ function minimal_share_minimal_share_services() {
     'pinterest' => array(
       'enabled' => FALSE,
       'title' => t('Pinterest'),
-      'link' => 'http://pinterest.com/pin/create/button/?url=[url]&description=[title]',
+      'url' => 'http://pinterest.com/pin/create/button/?url=[url]&description=[title]',
       'size' => array('width' => '1000', 'height' => '600'),
       'icon' => TRUE,
     ),
     'tumblr' => array(
       'enabled' => FALSE,
       'title' => t('Tumblr'),
-      'link' => 'https://www.tumblr.com/share/link?url=[url]&name=[title]',
+      'url' => 'https://www.tumblr.com/share/link?url=[url]&name=[title]',
       'size' => array('width' => '455', 'height' => '455'),
       'icon' => TRUE,
     ),
     'email' => array(
       'enabled' => FALSE,
       'title' => t('Email'),
-      'link' => 'mailto:?subject=[title]&body=[url]',
+      'url' => 'mailto:?subject=[title]&body=[url]',
       'icon' => TRUE,
     ),
     'print' => array(
       'enabled' => FALSE,
       'title' => t('Print'),
-      'link' => '',
+      'url' => '',
       'icon' => TRUE,
     ),
   );
