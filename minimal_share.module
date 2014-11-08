@@ -121,6 +121,7 @@ function minimal_share_field($entity_type, $entity) {
       case 'name':
         $service['label'] = $service['title'];
         break;
+
       case 'icon':
         $service['label'] = '';
         $element['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-icons.css';
@@ -336,7 +337,8 @@ function minimal_share_count($service_name, $url) {
 
   if ($data[$cid] > 999 && $data[$cid] <= 999999) {
     $data[$cid] = floor($data[$cid] / 1000) . 'k';
-  } elseif ($data[$cid] > 999999) {
+  }
+  elseif ($data[$cid] > 999999) {
     $data[$cid] = floor($data[$cid] / 1000000) . 'm';
   }
 
