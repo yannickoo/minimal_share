@@ -34,6 +34,6 @@ function hook_minimal_share_services() {
  * @param array $services
  *   An associative array of all defined services.
  */
-function hook_minimal_share_services_alter(&$services) {
+function hook_minimal_share_services_alter(array &$services) {
   $services['drupalorg']['size']['width'] = '500';
 }
