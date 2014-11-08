@@ -1,5 +1,4 @@
-Font license info
-
+# Font license info
 
 ## Zocial
 
@@ -8,5 +7,3 @@ Font license info
    Author:    Sam Collins
    License:   MIT (http://opensource.org/licenses/mit-license.php)
    Homepage:  http://zocial.smcllns.com/
-
-
