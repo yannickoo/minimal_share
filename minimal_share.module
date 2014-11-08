@@ -354,7 +354,7 @@ function minimal_share_count($service_name, $url) {
  * @return bool
  *   Whether count callback exists and is valid or not.
  */
-function minimal_share_count_callback_exists($service) {
+function minimal_share_count_callback_exists(array $service) {
   return isset($service['count_callback']) && function_exists($service['count_callback']) ? TRUE : FALSE;
 }
 
@@ -369,7 +369,7 @@ function minimal_share_count_callback_exists($service) {
  * @return int
  *   The amount of shares.
  */
-function minimal_share_count_callback($service, $url) {
+function minimal_share_count_callback(array $service, $url) {
   return isset($service['count_callback']) && function_exists($service['count_callback']) ? call_user_func_array($service['count_callback'], array($url)) : 0;
 }
 
