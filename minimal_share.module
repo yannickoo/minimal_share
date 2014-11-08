@@ -316,21 +316,21 @@ function minimal_share_count($service_name, $url) {
   $cid = 'minimal_share:' . md5($service_name . $url);
   $data = &drupal_static(__FUNCTION__);
 
-  if (!isset($data)) {
+  if (!isset($data[$cid])) {
     $cache_lifetime = isset($settings['general']['cache_lifetime']) ? $settings['general']['cache_lifetime'] : 900;
 
     if ($cache_lifetime) {
       if ($cache = cache_get($cid)) {
-        $data = $cache->data;
+        $data[$cid] = $cache->data;
       }
       else {
-        $data = minimal_share_count_callback($service, $url);
+        $data[$cid] = minimal_share_count_callback($service, $url);
 
-        cache_set($cid, (int) $data, 'cache', time() + $cache_lifetime);
+        cache_set($cid, (int) $data[$cid], 'cache', time() + $cache_lifetime);
       }
     }
     else {
-      $data = minimal_share_count_callback($service, $url);
+      $data[$cid] = minimal_share_count_callback($service, $url);
     }
   }
 
