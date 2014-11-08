@@ -2,10 +2,6 @@ label .minimal-share > * {
   line-height: 2em;
 }
 
-#minimal-share-preview > .minimal-share {
-  overflow: hidden;
-}
-
 #minimal-share-preview > .minimal-share > * {
   margin-left: 0;
   margin-right: 0.3em;
@@ -21,6 +17,10 @@ label .minimal-share > * {
 
 #minimal-share-preview > .minimal-share > *.hide {
   display: none;
+}
+
+#minimal-share-preview > .minimal-share.ui-sortable {
+  overflow: hidden;
 }
 
 #minimal-share-preview > .minimal-share.ui-sortable > * {
