@@ -400,7 +400,7 @@ function minimal_share_twitter_count($url) {
   }
 
   $data = drupal_json_decode($request->data);
-  $count = isset($data->count) ? $data->count : 0;
+  $count = isset($data['count']) ? $data['count'] : 0;
 
   return $count;
 }
@@ -423,7 +423,7 @@ function minimal_share_gplus_count($url) {
   }
 
   $data = drupal_json_decode($request->data);
-  $count = isset($data[0]->result->metadata->globalCounts->count) ? $data[0]->result->metadata->globalCounts->count : 0;
+  $count = isset($data[0]['result']['metadata']['globalCounts']['count']) ? $data[0]['result']['metadata']['globalCounts']['count'] : 0;
 
   return $count;
 }
