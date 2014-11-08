@@ -334,7 +334,14 @@ function minimal_share_count($service_name, $url) {
     }
   }
 
-  return $data;
+  if ($data[$cid] > 999 && $data[$cid] <= 999999) {
+    $data[$cid] = floor($data[$cid] / 1000) . 'k';
+  } elseif ($data[$cid] > 999999) {
+    $data[$cid] = floor($data[$cid] / 1000000) . 'm';
+  }
+
+  return $data[$cid];
+}
 }
 
 /**
