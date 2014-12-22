@@ -280,7 +280,6 @@ function minimal_share_settings() {
   }
 
   uasort($settings['services'], 'minimal_share_sort_by_weight');
-  uasort($settings['services'], 'minimal_share_sort_by_enabled');
 
   return $settings;
 }
@@ -290,13 +289,6 @@ function minimal_share_settings() {
  */
 function minimal_share_sort_by_weight($a, $b) {
   return strcmp($a['weight'], $b['weight']);
-}
-
-/**
- * Sorting by enabled function.
- */
-function minimal_share_sort_by_enabled($a, $b) {
-  return strcmp($b['enabled'], $a['enabled']);
 }
 
 /**
