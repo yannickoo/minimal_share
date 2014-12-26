@@ -319,7 +319,7 @@ function minimal_share_settings() {
   $settings['services'] = array_merge_recursive(minimal_share_services(), $service_settings);
 
   $i = 0;
-  foreach ($settings['services'] as $key => &$service) {
+  foreach ($settings['services'] as &$service) {
     if (!isset($service['weight'])) {
       $service['weight'] = $i;
     }
