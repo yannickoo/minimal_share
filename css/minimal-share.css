@@ -47,3 +47,8 @@
 .minimal-share > .print {
   color: #666;
 }
+
+.minimal-share > .email:hover,
+.minimal-share > .print:hover {
+  color: #666;
+}
