@@ -318,9 +318,10 @@ function minimal_share_settings() {
   $service_settings = isset($settings['services']) ? $settings['services'] : array();
   $settings['services'] = array_merge_recursive(minimal_share_services(), $service_settings);
 
+  $i = 0;
   foreach ($settings['services'] as $key => &$service) {
     if (!isset($service['weight'])) {
-      $service['weight'] = $key;
+      $service['weight'] = $i;
     }
 
     if (isset($service['enabled'])) {
@@ -331,18 +332,52 @@ function minimal_share_settings() {
     else {
       $service['enabled'] = TRUE;
     }
+
+    $i++;
   }
 
+  uasort($settings['services'], 'minimal_share_sort_by_enabled');
   uasort($settings['services'], 'minimal_share_sort_by_weight');
 
   return $settings;
 }
 
 /**
- * Sorting by weight function.
+ * Sort an array by weight function.
  */
 function minimal_share_sort_by_weight($a, $b) {
-  return strcmp($a['weight'], $b['weight']);
+  return minimal_share_sort_by_key('weight', $a, $b);
+}
+
+/**
+ * Sort an array by enabled function.
+ */
+function minimal_share_sort_by_enabled($a, $b) {
+  return minimal_share_sort_by_key('enabled', $a, $b, 'desc');
+}
+
+/**
+ * Sort an array by key.
+ *
+ * @param string $key
+ *   The key you want to sort by.
+ * @param string $a
+ *   First string for comparison.
+ * @param string $b
+ *   Second string for comparison.
+ * @param string $order
+ *   Whether you want to sort asc or desc.
+ *
+ * @return int
+ *   The return of strcmp().
+ */
+function minimal_share_sort_by_key($key, $a, $b, $order = 'asc') {
+  if ($order == 'asc') {
+    return strcmp($a[$key], $b[$key]);
+  }
+  else {
+    return strcmp($b[$key], $a[$key]);
+  }
 }
 
 /**
