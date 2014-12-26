@@ -63,6 +63,19 @@ function minimal_share_field_extra_fields() {
 }
 
 /**
+ * Implements hook_block_info().
+ */
+function minimal_share_block_info() {
+  $blocks = array();
+
+  $blocks['minimal_share'] = array(
+    'info' => t('Minimal Share'),
+  );
+
+  return $blocks;
+}
+
+/**
  * Implements hook_entity_view().
  */
 function minimal_share_entity_view($entity, $type, $view_mode, $langcode) {
@@ -75,97 +88,30 @@ function minimal_share_entity_view($entity, $type, $view_mode, $langcode) {
 }
 
 /**
+ * Implements hook_block_view().
+ */
+function minimal_share_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'minimal_share':
+      $block['content'] = minimal_share();
+      break;
+  }
+
+  return $block;
+}
+
+/**
  * Extra field callback.
  */
 function minimal_share_field($entity_type, $entity) {
-  // Get all available service information.
-  $settings = minimal_share_settings();
-
   $uri = entity_uri($entity_type, $entity);
   $url = drupal_encode_path(url($uri['path'], array('absolute' => TRUE)));
   $title = drupal_encode_path(entity_label($entity_type, $entity));
 
-  $element = array(
-    '#type' => 'html_tag',
-    '#tag' => 'p',
-    '#attributes' => array('class' => array('minimal-share')),
-    '#value' => '',
-    '#attached' => array(
-      'css' => array(
-        drupal_get_path('module', 'minimal_share') . '/css/minimal-share.css',
-      ),
-      'js' => array(
-        drupal_get_path('module', 'minimal_share') . '/js/minimal-share.js',
-      ),
-    ),
-  );
-
-  foreach ($settings['services'] as $service_name => $service) {
-    if (!$service['enabled']) {
-      continue;
-    }
-
-    $service['url'] = str_replace(array('[title]', '[url]'), array($title, $url), $service['url']);
-
-    // Set default label type.
-    if (!isset($service['label_type'])) {
-      $service['label_type'] = 'name';
-    }
-
-    // Load count only if necessary.
-    if ($service['label_type'] == 'name_count' || $service['label_type'] == 'custom' && strpos($service['custom'], '[count]') !== FALSE) {
-      $count = minimal_share_count($service_name, $url);
-    }
-
-    switch ($service['label_type']) {
-      case 'name':
-        $service['label'] = $service['title'];
-        break;
-
-      case 'icon':
-        $service['label'] = '';
-        $element['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-icons.css';
-        break;
-
-      case 'name_count':
-        $service['label'] = '<span class="title">' . $service['title'] . '</span>';
-
-        if ($count || !$count && !$service['hide_zero']) {
-          $service['label'] .= ' <span class="count">(' . $count . ')</span>';
-        }
-        break;
-
-      case 'custom':
-        // Replace [count] token with real count.
-        if (minimal_share_count_callback_exists($service) && strpos($service['custom'], '[count]') !== FALSE) {
-          $service['custom'] = str_replace('[count]', $count, $service['custom']);
-        }
-
-        $service['label'] = check_plain($service['custom']);
-        break;
-    }
-
-    $link_options = array(
-      'html' => TRUE,
-      'external' => TRUE,
-      'attributes' => array(
-        'class' => array($service_name),
-      ),
-    );
-
-    if ($service['label_type'] == 'icon') {
-      $link_options['attributes']['class'][] = 'icon';
-    }
-
-    // Add data attributes for size.
-    foreach (array('width', 'height') as $property) {
-      if (isset($service['size'][$property])) {
-        $link_options['attributes']['data-' . $property] = $service['size'][$property];
-      }
-    }
-
-    $element['#value'] .= l($service['label'], $service['url'], $link_options);
-  }
+  // Get renderable array for widget.
+  $element = minimal_share($url, $title);
 
   return $element;
 }
@@ -251,6 +197,114 @@ function minimal_share_minimal_share_services() {
   );
 
   return $services;
+}
+
+/**
+ * Function to render a Minimal Share widget.
+ *
+ * @param string $url
+ *   The URL to share.
+ * @param string $title
+ *   The title of the shared thing.
+ *
+ * @return array
+ *   A renderable array for the widget.
+ */
+function minimal_share($url = '', $title = '') {
+  // Get all available service information.
+  $settings = minimal_share_settings();
+
+  if (!$url) {
+    $url = url(current_path(), array('absolute' => TRUE));
+  }
+
+  if (!$title) {
+    $title = drupal_get_title();
+  }
+
+  $element = array(
+    '#type' => 'html_tag',
+    '#tag' => 'p',
+    '#attributes' => array('class' => array('minimal-share')),
+    '#value' => '',
+    '#attached' => array(
+      'css' => array(
+        drupal_get_path('module', 'minimal_share') . '/css/minimal-share.css',
+      ),
+      'js' => array(
+        drupal_get_path('module', 'minimal_share') . '/js/minimal-share.js',
+      ),
+    ),
+  );
+
+  foreach ($settings['services'] as $service_name => $service) {
+    if (!$service['enabled']) {
+      continue;
+    }
+
+    $service['url'] = str_replace(array('[title]', '[url]'), array(drupal_encode_path($title), drupal_encode_path($url)), $service['url']);
+
+    // Set default label type.
+    if (!isset($service['label_type'])) {
+      $service['label_type'] = 'name';
+    }
+
+    // Load count only if necessary.
+    if ($service['label_type'] == 'name_count' || $service['label_type'] == 'custom' && strpos($service['custom'], '[count]') !== FALSE) {
+      $count = minimal_share_count($service_name, $url);
+    }
+
+    switch ($service['label_type']) {
+      case 'name':
+        $service['label'] = $service['title'];
+        break;
+
+      case 'icon':
+        $service['label'] = '';
+        $element['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-icons.css';
+        break;
+
+      case 'name_count':
+        $service['label'] = '<span class="title">' . $service['title'] . '</span>';
+
+        if ($count || !$count && !$service['hide_zero']) {
+          $service['label'] .= ' <span class="count">(' . $count . ')</span>';
+        }
+        break;
+
+      case 'custom':
+        // Replace [count] token with real count.
+        if (minimal_share_count_callback_exists($service) && strpos($service['custom'], '[count]') !== FALSE) {
+          $service['custom'] = str_replace('[count]', $count, $service['custom']);
+        }
+
+        $service['label'] = check_plain($service['custom']);
+        break;
+    }
+
+    $link_options = array(
+      'html' => TRUE,
+      'external' => TRUE,
+      'attributes' => array(
+        'class' => array($service_name),
+      ),
+    );
+
+    if ($service['label_type'] == 'icon') {
+      $link_options['attributes']['class'][] = 'icon';
+    }
+
+    // Add data attributes for size.
+    foreach (array('width', 'height') as $property) {
+      if (isset($service['size'][$property])) {
+        $link_options['attributes']['data-' . $property] = $service['size'][$property];
+      }
+    }
+
+    $element['#value'] .= l($service['label'], $service['url'], $link_options);
+  }
+
+  return $element;
 }
 
 /**
