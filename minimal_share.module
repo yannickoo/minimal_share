@@ -163,7 +163,7 @@ function minimal_share_minimal_share_services() {
     'linkedin' => array(
       'enabled' => FALSE,
       'title' => t('LinkedIn'),
-      'url' => 'http://www.linkedin.com/shareArticle?mini=true&url=[url]&title[title]',
+      'url' => 'http://www.linkedin.com/shareArticle?mini=true&url=[url]&title=[title]',
       'size' => array('width' => '520', 'height' => '570'),
       'icon' => TRUE,
       'count_callback' => 'minimal_share_linkedin_count',
