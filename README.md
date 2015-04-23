@@ -2,7 +2,7 @@
 
 Current Maintainers:
 
-* [yannickoo](http://drupal.org/user/531118)
+* [yannickoo](https://www.drupal.org/u/yannickoo)
 
 This module provides minimal sharing links for Facebook, Twitter and Google+.
 
