@@ -18,8 +18,9 @@ function hook_minimal_share_services() {
 
   $services['drupalorg'] = array(
     'title' => t('Drupal.org'),
-    'url' => 'https://www.drupal.org/share?url=[url]&title=[title]',
+    'url' => 'https://www.drupal.org/share?url=[url]&title=[title]&image=[image]',
     'size' => array('width' => '600', 'height' => '500'),
+    'params' => array('image'),
   );
 
   return $services;
