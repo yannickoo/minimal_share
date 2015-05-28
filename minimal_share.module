@@ -159,7 +159,7 @@ function minimal_share_minimal_share_services() {
     ),
     'twitter' => array(
       'title' => t('Twitter'),
-      'url' => 'http://twitter.com/home?status=[title]%20-%20[url]',
+      'url' => 'https://twitter.com/intent/tweet?status=[title]%20-%20[url]',
       'size' => array('width' => '600', 'height' => '260'),
       'icon' => TRUE,
       'count_callback' => 'minimal_share_twitter_count',
