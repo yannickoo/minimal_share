@@ -41,6 +41,9 @@ function hook_minimal_share_services_alter(array &$services) {
   // Change link label:
   $services['drupalorg']['title'] = 'Drupal';
 
+  // Disable a service:
+  $services['drupalorg']['enabled'] = FALSE;
+
   // Change weight of links:
   $services['drupalorg']['weight'] = 10;
 }
