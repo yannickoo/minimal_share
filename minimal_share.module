@@ -129,8 +129,6 @@ function minimal_share_services() {
     $services += module_invoke($module, 'minimal_share_services');
   }
 
-  drupal_alter('minimal_share_services', $services);
-
   return $services;
 }
 
@@ -310,10 +308,13 @@ function minimal_share($url = '', $title = '') {
 /**
  * Get Minimal Share settings.
  *
+ * @param bool $alterable
+ *   Whether services can be altered or not.
+ *
  * @return array
  *   Contains settings.
  */
-function minimal_share_settings() {
+function minimal_share_settings($alterable = TRUE) {
   $settings = variable_get('minimal_share', array());
   $service_settings = isset($settings['services']) ? $settings['services'] : array();
   $settings['services'] = array_merge_recursive(minimal_share_services(), $service_settings);
@@ -334,6 +335,11 @@ function minimal_share_settings() {
     }
 
     $i++;
+  }
+
+  // Allow other modules to alter available services.
+  if ($alterable) {
+    drupal_alter('minimal_share_services', $settings['services']);
   }
 
   uasort($settings['services'], 'minimal_share_sort_by_enabled');

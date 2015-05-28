@@ -17,7 +17,7 @@ function minimal_share_config_form($form, &$form_state) {
   $form['#attached']['js'][] = drupal_get_path('module', 'minimal_share') . '/js/minimal-share-admin.js';
 
   // Get all available service information.
-  $settings = minimal_share_settings();
+  $settings = minimal_share_settings(FALSE);
 
   $form['minimal_share'] = array(
     '#type' => 'container',
