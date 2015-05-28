@@ -111,6 +111,36 @@ function minimal_share_config_form($form, &$form_state) {
       ),
     );
 
+    if (isset($service['params']) && count($service['params'])) {
+      $form['minimal_share']['services'][$service_name]['params'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Additional parameters'),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+        '#states' => array(
+          'visible' => array(
+            'input[name="minimal_share[services][' . $service_name . '][enabled]"]' => array('checked' => TRUE),
+          ),
+        ),
+      );
+
+      foreach ($service['params'] as $param => $value) {
+        $form['minimal_share']['services'][$service_name]['params'][$param] = array(
+          '#type' => 'textfield',
+          '#title' => $param,
+          '#description' => t('Enter the value for the additional parameter.'),
+          '#default_value' => $value,
+        );
+      }
+
+      $form['minimal_share']['services'][$service_name]['params']['token'] = array(
+        '#type' => 'container',
+        '#theme' => 'token_tree',
+        '#token_types' => 'all',
+        '#dialog' => TRUE,
+      );
+    }
+
     $form['minimal_share']['services'][$service_name]['weight'] = array(
       '#type' => 'hidden',
     );

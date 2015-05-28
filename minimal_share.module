@@ -109,9 +109,22 @@ function minimal_share_field($entity_type, $entity) {
   $uri = entity_uri($entity_type, $entity);
   $url = drupal_encode_path(url($uri['path'], array('absolute' => TRUE)));
   $title = drupal_encode_path(entity_label($entity_type, $entity));
+  $settings = minimal_share_settings();
+
+  foreach ($settings['services'] as &$service) {
+    if (!empty($service['params'])) {
+      foreach ($service['params'] as $param => $value) {
+        // Replace tokens, strip tags and encode string.
+        $value = token_replace($value, array($entity_type => $entity), array('clear' => TRUE));
+        $value = drupal_encode_path(strip_tags($value));
+
+        $service['url'] = str_replace('[' . $param . ']', $value, $service['url']);
+      }
+    }
+  }
 
   // Get renderable array for widget.
-  $element = minimal_share($url, $title);
+  $element = minimal_share($url, $title, $settings);
 
   return $element;
 }
@@ -169,16 +182,18 @@ function minimal_share_minimal_share_services() {
     'pinterest' => array(
       'enabled' => FALSE,
       'title' => t('Pinterest'),
-      'url' => 'http://pinterest.com/pin/create/button/?url=[url]&description=[title]',
+      'url' => 'http://pinterest.com/pin/create/button/?url=[url]&description=[title]&media=[media]',
       'size' => array('width' => '1000', 'height' => '600'),
       'icon' => TRUE,
+      'params' => array('media'),
     ),
     'tumblr' => array(
       'enabled' => FALSE,
       'title' => t('Tumblr'),
-      'url' => 'https://www.tumblr.com/share/link?url=[url]&name=[title]',
+      'url' => 'https://www.tumblr.com/share/link?url=[url]&name=[title]&description=[description]',
       'size' => array('width' => '455', 'height' => '455'),
       'icon' => TRUE,
+      'params' => array('description'),
     ),
     'email' => array(
       'enabled' => FALSE,
@@ -204,13 +219,17 @@ function minimal_share_minimal_share_services() {
  *   The URL to share.
  * @param string $title
  *   The title of the shared thing.
+ * @param array $settings
+ *   An overridden configuration.
  *
  * @return array
  *   A renderable array for the widget.
  */
-function minimal_share($url = '', $title = '') {
-  // Get all available service information.
-  $settings = minimal_share_settings();
+function minimal_share($url = '', $title = '', $settings = array()) {
+  if (!count($settings)) {
+    // Get all available service information.
+    $settings = minimal_share_settings();
+  }
 
   if (!$url) {
     $url = url(current_path(), array('absolute' => TRUE));
@@ -317,7 +336,24 @@ function minimal_share($url = '', $title = '') {
 function minimal_share_settings($alterable = TRUE) {
   $settings = variable_get('minimal_share', array());
   $service_settings = isset($settings['services']) ? $settings['services'] : array();
-  $settings['services'] = array_merge_recursive(minimal_share_services(), $service_settings);
+  $services = minimal_share_services();
+
+  // Clean up the params array, this is necessary because saving
+  // the configuration form mess the keys up.
+  foreach ($services as &$service) {
+    if (!empty($service['params'])) {
+      $params = array();
+
+      foreach ($service['params'] as $param) {
+        $params[$param] = '';
+      }
+
+      unset($service['params']);
+      $service['params'] = $params;
+    }
+  }
+
+  $settings['services'] = array_replace_recursive($services, $service_settings);
 
   $i = 0;
   foreach ($settings['services'] as &$service) {
