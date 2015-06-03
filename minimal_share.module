@@ -259,7 +259,7 @@ function minimal_share($url = '', $title = '', $settings = array()) {
       continue;
     }
 
-    $service['url'] = str_replace(array('[title]', '[url]'), array(drupal_encode_path($title), drupal_encode_path($url)), $service['url']);
+    $service['url'] = str_replace(array('[title]', '[url]'), array($title, drupal_encode_path($url)), $service['url']);
 
     // Set default label type.
     if (!isset($service['label_type'])) {
