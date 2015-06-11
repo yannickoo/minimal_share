@@ -6,6 +6,9 @@
   color: #fff;
   text-decoration: none;
   white-space: pre;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .minimal-share > *:first-child {
