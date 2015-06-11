@@ -106,11 +106,12 @@
           var $previewFakeLink = $preview.children('.' + serviceType);
 
           value = Drupal.behaviors.minimalShareAdmin.replaceCountToken(value, $this);
+          value = Drupal.behaviors.minimalShareAdmin.replaceIconToken(value, $this);
 
           if ($customRadio.attr('checked') && value) {
-            $previewFakeLink.text(value);
+            $previewFakeLink.html(value);
             $customRadioLabel.data('orig-title', $customRadioLabel.text());
-            $customRadioLabel.text(value);
+            $customRadioLabel.html(value);
           }
         });
 
@@ -125,14 +126,15 @@
           var $previewFakeLink = $preview.children('.' + serviceType);
 
           value = Drupal.behaviors.minimalShareAdmin.replaceCountToken(value, $this);
+          value = Drupal.behaviors.minimalShareAdmin.replaceIconToken(value, $this);
 
           if (value && !$customRadioLabel.data('orig-title')) {
             $customRadioLabel.data('orig-title', $customRadioLabel.text());
           }
 
           if (value) {
-            $customRadioLabel.text(value);
-            $previewFakeLink.text(value);
+            $customRadioLabel.html(value);
+            $previewFakeLink.html(value);
           }
           else {
             $customRadioLabel.text($customRadioLabel.data('orig-title'));
@@ -155,8 +157,24 @@
         var $countRadioLabel = $countRadio.siblings().children('span');
         var count = $countRadioLabel.text().match(/\d+/);
 
-        value = value.replace('[count]', count);
+        value = value.replace(/\[count\]/g, count);
 
+      }
+
+      return value;
+    },
+    /**
+     * Replace [icon] token for label types.
+     */
+    replaceIconToken: function(value, $elm) {
+      if (value.indexOf('[icon]') !== -1) {
+        var service = $elm.attr('id').replace('edit-minimal-share-services-', '').replace('-custom', '');
+
+        if (typeof Drupal.settings.minimalShare.unicodes[service] === 'undefined') {
+          return value;
+        }
+
+        value = value.replace(/\[icon\]/g, '<span class="icon">' + Drupal.settings.minimalShare.unicodes[service]) + '</span>';
       }
 
       return value;

@@ -29,6 +29,8 @@ function minimal_share_config_form($form, &$form_state) {
     '#suffix' => '</div></div>',
   );
 
+  $unicodes = array();
+
   foreach ($settings['services'] as $service_name => $service) {
     $form['minimal_share']['services'][$service_name] = array(
       '#type' => 'fieldset',
@@ -70,7 +72,14 @@ function minimal_share_config_form($form, &$form_state) {
 
       // We wrap radio labels to apply styles correctly.
       $option = '<span class="minimal-share"><span class="' . $fake_link_class . '">' . $option . '</span></span>';
+
+      $unicodes[$service_name] = '&#' . $service['unicode'] . ';';
     }
+
+    $form['#attached']['js'][] = array(
+      'data' => array('minimalShare' => array('unicodes' => $unicodes)),
+      'type' => 'setting',
+    );
 
     $form['minimal_share']['services'][$service_name]['label_type'] = array(
       '#type' => 'radios',
@@ -110,6 +119,13 @@ function minimal_share_config_form($form, &$form_state) {
         ),
       ),
     );
+
+    if (!empty($service['unicode'])) {
+      $prefix = $form['minimal_share']['services'][$service_name]['custom']['#description'] ? ' ' : '';
+      $description = $prefix . t('Use <code>[icon]</code> to display !unicode', array('!unicode' => '<span class="icon">&#' . $service['unicode'] . ';</span>'));
+
+      $form['minimal_share']['services'][$service_name]['custom']['#description'] .= $description;
+    }
 
     if (isset($service['params']) && count($service['params'])) {
       $form['minimal_share']['services'][$service_name]['params'] = array(

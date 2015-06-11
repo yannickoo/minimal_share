@@ -15,6 +15,10 @@
   margin-left: 0;
 }
 
+.minimal-share .icon {
+  font-family: 'ms-icons';
+}
+
 .minimal-share > a:hover,
 .minimal-share > a:active,
 .minimal-share > a:focus {

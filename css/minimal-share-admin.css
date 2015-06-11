@@ -33,3 +33,7 @@
 .minimal-share > style {
   display: none;
 }
+
+#minimal-share-config-form .description .icon {
+  font-family: 'ms-icons';
+}
