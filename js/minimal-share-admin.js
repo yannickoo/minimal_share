@@ -37,7 +37,7 @@
           $fakeLinkPreview.text(fakeLinkLabel);
         });
 
-        var $enableCheckboxes = $('input[name$="[enabled]"');
+        var $enableCheckboxes = $('input[name$="[enabled]"]');
 
         $enableCheckboxes.change(function() {
           var $this = $(this);
