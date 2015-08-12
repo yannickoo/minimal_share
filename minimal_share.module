@@ -178,11 +178,11 @@ function minimal_share_minimal_share_services() {
   $services = array(
     'facebook' => array(
       'title' => t('Facebook'),
-      'url' => 'https://www.facebook.com/sharer.php?u=[url]&t=[title]',
+      'url' => 'https://www.facebook.com/sharer.php?u=[url]',
       'size' => array('width' => '600', 'height' => '500'),
       'icon' => TRUE,
       'unicode' => '59392',
-      'params' => array('url', 'title'),
+      'params' => array('url'),
       'count_callback' => 'minimal_share_facebook_count',
     ),
     'twitter' => array(
