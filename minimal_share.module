@@ -110,14 +110,40 @@ function minimal_share_field($entity_type, $entity) {
   $url = url($uri['path'], array('absolute' => TRUE));
   $title = drupal_encode_path(entity_label($entity_type, $entity));
   $settings = minimal_share_settings();
+  list(, , $bundle) = entity_extract_ids($entity_type, $entity);
+  $default_params = array(
+    'title' => $title,
+    'url' => $url,
+  );
 
   foreach ($settings['services'] as &$service) {
     if (!empty($service['params'])) {
       foreach ($service['params'] as $param => $value) {
+        if ($param == '_override') {
+          continue;
+        }
+
+        // Provide default values for 'title' and 'url'.
+        if (in_array($param, array('title', 'url')) && !$value) {
+          $value = $default_params[$param];
+        }
+
+        // Check whether configuration is overridden.
+        if (!empty($service['params']['_override'][$param])) {
+          $value = $service['params']['_override'][$param];
+        }
+
+        // Check whether config for this entity bundle is overridden.
+        if (!empty($service['params']['_override']['entity_types'][$entity_type]['_enabled'][$bundle]) &&
+            $service['params']['_override']['entity_types'][$entity_type][$bundle][$param]) {
+          $value = $service['params']['_override']['entity_types'][$entity_type][$bundle][$param];
+        }
+
         // Replace tokens, strip tags and encode string.
         $value = token_replace($value, array($entity_type => $entity), array('clear' => TRUE));
         $value = drupal_encode_path(strip_tags($value));
 
+        // Replace param in final sharing URL.
         $service['url'] = str_replace('[' . $param . ']', $value, $service['url']);
       }
     }
@@ -156,6 +182,7 @@ function minimal_share_minimal_share_services() {
       'size' => array('width' => '600', 'height' => '500'),
       'icon' => TRUE,
       'unicode' => '59392',
+      'params' => array('url', 'title'),
       'count_callback' => 'minimal_share_facebook_count',
     ),
     'twitter' => array(
@@ -164,6 +191,7 @@ function minimal_share_minimal_share_services() {
       'size' => array('width' => '600', 'height' => '260'),
       'icon' => TRUE,
       'unicode' => '59394',
+      'params' => array('url', 'title'),
       'count_callback' => 'minimal_share_twitter_count',
     ),
     'gplus' => array(
@@ -172,6 +200,7 @@ function minimal_share_minimal_share_services() {
       'size' => array('width' => '600', 'height' => '400'),
       'icon' => TRUE,
       'unicode' => '59395',
+      'params' => array('url'),
       'count_callback' => 'minimal_share_gplus_count',
     ),
     'linkedin' => array(
@@ -181,6 +210,7 @@ function minimal_share_minimal_share_services() {
       'size' => array('width' => '520', 'height' => '570'),
       'icon' => TRUE,
       'unicode' => '59396',
+      'params' => array('url', 'title'),
       'count_callback' => 'minimal_share_linkedin_count',
     ),
     'pinterest' => array(
@@ -190,7 +220,7 @@ function minimal_share_minimal_share_services() {
       'size' => array('width' => '1000', 'height' => '600'),
       'icon' => TRUE,
       'unicode' => '59397',
-      'params' => array('media'),
+      'params' => array('url', 'title', 'media'),
     ),
     'tumblr' => array(
       'enabled' => FALSE,
@@ -199,7 +229,7 @@ function minimal_share_minimal_share_services() {
       'size' => array('width' => '455', 'height' => '455'),
       'icon' => TRUE,
       'unicode' => '59398',
-      'params' => array('description'),
+      'params' => array('url', 'title', 'description'),
     ),
     'whatsapp' => array(
       'enabled' => FALSE,
@@ -217,6 +247,7 @@ function minimal_share_minimal_share_services() {
       'url' => 'mailto:?subject=[title]&body=[url]',
       'icon' => TRUE,
       'unicode' => '59393',
+      'params' => array('url', 'title'),
     ),
     'print' => array(
       'enabled' => FALSE,
@@ -276,8 +307,6 @@ function minimal_share($url = '', $title = '', $settings = array()) {
     if (!$service['enabled']) {
       continue;
     }
-
-    $service['url'] = str_replace(array('[title]', '[url]'), array($title, drupal_encode_path($url)), $service['url']);
 
     // Set default label type.
     if (!isset($service['label_type'])) {
@@ -379,7 +408,6 @@ function minimal_share_settings($alterable = TRUE) {
         $params[$param] = '';
       }
 
-      unset($service['params']);
       $service['params'] = $params;
     }
   }
@@ -451,6 +479,23 @@ function minimal_share_sort_by_key($key, $a, $b, $order = 'asc') {
   else {
     return strcmp($b[$key], $a[$key]);
   }
+}
+
+/**
+ * Convert string to machine-readable name.
+ *
+ * @param string $str
+ *   The string to convert.
+ *
+ * @return string
+ *   The machine-readable string.
+ */
+function minimal_share_machine_name($str) {
+  $machine_readable = drupal_strtolower($str);
+
+  $machine_readable = preg_replace('@[^a-z0-9_]+@','_', $machine_readable);
+
+  return $machine_readable;
 }
 
 /**

@@ -19,6 +19,18 @@ function minimal_share_config_form($form, &$form_state) {
   // Get all available service information.
   $settings = minimal_share_settings(FALSE);
 
+  // Collect all bundles where a Minimal Share field is used.
+  $extra_fields = array();
+  foreach (entity_get_info() as $entity_type => $entity_info) {
+    foreach ($entity_info['bundles'] as $bundle_name => $bundle) {
+      $field_extra_fields = field_info_extra_fields($entity_type, $bundle_name, 'display');
+
+      if (isset($field_extra_fields['minimal_share'])) {
+        $extra_fields[$entity_info['label']][$bundle['label']]['minimal_share'] = $field_extra_fields['minimal_share'];
+      }
+    }
+  }
+
   $form['minimal_share'] = array(
     '#type' => 'container',
   );
@@ -130,7 +142,7 @@ function minimal_share_config_form($form, &$form_state) {
     if (isset($service['params']) && count($service['params'])) {
       $form['minimal_share']['services'][$service_name]['params'] = array(
         '#type' => 'fieldset',
-        '#title' => t('Additional parameters'),
+        '#title' => t('Override parameters'),
         '#collapsible' => TRUE,
         '#collapsed' => TRUE,
         '#states' => array(
@@ -140,13 +152,86 @@ function minimal_share_config_form($form, &$form_state) {
         ),
       );
 
-      foreach ($service['params'] as $param => $value) {
-        $form['minimal_share']['services'][$service_name]['params'][$param] = array(
+      $override_params = $service['params'];
+      unset($override_params['_override']);
+
+      foreach ($override_params as $param => $value) {
+        if (isset($service['params']['_override'][$param])) {
+          $value = $service['params']['_override'][$param];
+        }
+
+        $form['minimal_share']['services'][$service_name]['params']['_override'][$param] = array(
           '#type' => 'textfield',
-          '#title' => $param,
-          '#description' => t('Enter the value for the additional parameter.'),
+          '#title' => drupal_ucfirst($param),
+          '#description' => t('Enter new value for %param parameter.', array('%param' => $param)),
           '#default_value' => $value,
         );
+      }
+
+      $override_options = array();
+      foreach ($extra_fields as $entity_type => $bundles) {
+        $clean_entity_type = minimal_share_machine_name($entity_type);
+
+        foreach ($bundles as $bundle_name => $display) {
+          $clear_bundle_name = minimal_share_machine_name($bundle_name);
+          $override_options[$clean_entity_type][$clear_bundle_name] = $bundle_name;
+        }
+      }
+
+      foreach ($extra_fields as $entity_type => $bundles) {
+        $clean_entity_type = minimal_share_machine_name($entity_type);
+
+        $form['minimal_share']['services'][$service_name]['params']['_override']['entity_types'][$clean_entity_type] = array(
+          '#type' => 'fieldset',
+          '#title' => $entity_type,
+          '#collapsible' => TRUE,
+          '#collapsed' => TRUE,
+        );
+
+        $entity_type_enabled = array();
+        if (isset($service['params']['_override']['entity_types'][$clean_entity_type]['_enabled'])) {
+          $entity_type_enabled = $service['params']['_override']['entity_types'][$clean_entity_type]['_enabled'];
+        }
+
+        $form['minimal_share']['services'][$service_name]['params']['_override']['entity_types'][$clean_entity_type]['_enabled'] = array(
+          '#type' => 'checkboxes',
+          '#title' => t('Override parameter'),
+          '#options' => $override_options[$clean_entity_type],
+          '#default_value' => $entity_type_enabled,
+        );
+
+        foreach ($bundles as $bundle_name => $display) {
+          $clean_bundle_name = drupal_strtolower(drupal_clean_css_identifier($bundle_name, array(' ' => '_')));
+
+          $form['minimal_share']['services'][$service_name]['params']['_override']['entity_types'][$clean_entity_type][$clean_bundle_name] = array(
+            '#type' => 'fieldset',
+            '#title' => $bundle_name,
+            '#collapsible' => TRUE,
+            '#collapsed' => TRUE,
+            '#states' => array(
+              'visible' => array(
+                'input[name="minimal_share[services][' . $service_name . '][params][_override][entity_types][' . $clean_entity_type . '][_enabled][' . $clean_bundle_name . ']"]' => array('checked' => TRUE),
+                ),
+              'expanded' => array(
+                'input[name="minimal_share[services][' . $service_name . '][params][_override][entity_types][' . $clean_entity_type . '][_enabled][' . $clean_bundle_name . ']"]' => array('checked' => TRUE),
+              ),
+            ),
+          );
+
+          foreach ($override_params as $param => $value) {
+            $param_value = '';
+            if (isset($service['params']['_override']['entity_types'][$clean_entity_type][$clean_bundle_name][$param])) {
+              $param_value = $service['params']['_override']['entity_types'][$clean_entity_type][$clean_bundle_name][$param];
+            }
+
+            $form['minimal_share']['services'][$service_name]['params']['_override']['entity_types'][$clean_entity_type][$clean_bundle_name][$param] = array(
+              '#type' => 'textfield',
+              '#title' => drupal_ucfirst($param),
+              '#description' => t('Enter new value for %param parameter.', array('%param' => $param)),
+              '#default_value' => $param_value,
+            );
+          }
+        }
       }
 
       $form['minimal_share']['services'][$service_name]['params']['token'] = array(
