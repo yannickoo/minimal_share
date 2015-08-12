@@ -201,6 +201,16 @@ function minimal_share_minimal_share_services() {
       'unicode' => '59398',
       'params' => array('description'),
     ),
+    'whatsapp' => array(
+      'enabled' => FALSE,
+      'title' => t('WhatsApp'),
+      'url' => 'whatsapp://send?text=[title]%20-%20[url]',
+      'size' => array('width' => '455', 'height' => '455'),
+      'icon' => TRUE,
+      'unicode' => '59400',
+      'params' => array('url', 'title'),
+      'mobile' => TRUE,
+    ),
     'email' => array(
       'enabled' => FALSE,
       'title' => t('Email'),
@@ -332,6 +342,11 @@ function minimal_share($url = '', $title = '', $settings = array()) {
       if (isset($service['size'][$property])) {
         $link_options['attributes']['data-' . $property] = $service['size'][$property];
       }
+    }
+
+    // Add class to link if service is only enabled for mobile devices.
+    if (isset($service['mobile']) && $service['mobile']) {
+      $link_options['attributes']['class'][] = 'ms-mobile-only';
     }
 
     $element['#value'] .= l($service['label'], $service['url'], $link_options);

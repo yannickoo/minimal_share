@@ -7,6 +7,12 @@
   "ascent": 850,
   "glyphs": [
     {
+      "uid": "9d3e9faf68fd4e12def853f0d4e1173b",
+      "css": "whatsapp",
+      "code": 59400,
+      "src": "fontawesome"
+    },
+    {
       "uid": "e566d3f1d24f22981f6552d5188e7265",
       "css": "gplus",
       "code": 59395,

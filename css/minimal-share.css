@@ -50,6 +50,10 @@
   background-color: #32506d;
 }
 
+.minimal-share > .whatsapp {
+  background-color: #4dc247;
+}
+
 .minimal-share > .email,
 .minimal-share > .print {
   color: #666;
@@ -58,4 +62,8 @@
 .minimal-share > .email:hover,
 .minimal-share > .print:hover {
   color: #666;
+}
+
+.minimal-share > .ms-hidden {
+  display: none;
 }

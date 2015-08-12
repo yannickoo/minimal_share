@@ -35,6 +35,10 @@
   content: '\e806';
 }
 
+.minimal-share > .icon.whatsapp:before {
+  content: '\e808';
+}
+
 .minimal-share > .icon.email:before {
   content: '\e801';
 }
