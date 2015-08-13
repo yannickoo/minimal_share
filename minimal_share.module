@@ -280,12 +280,19 @@ function minimal_share($url = '', $title = '', $settings = array()) {
     $settings = minimal_share_settings();
   }
 
+  // Provide default URL if it was not passed.
   if (!$url) {
     $url = url(current_path(), array('absolute' => TRUE));
   }
 
+  // Provide default title if it was not passed.
   if (!$title) {
     $title = drupal_get_title();
+
+    // Use site name if there is no title.
+    if (!$title) {
+      $title = variable_get('site_name');
+    }
   }
 
   $element = array(
@@ -377,6 +384,9 @@ function minimal_share($url = '', $title = '', $settings = array()) {
     if (isset($service['mobile']) && $service['mobile']) {
       $link_options['attributes']['class'][] = 'ms-mobile-only';
     }
+
+    // Replace default values in the sharing URL.
+    $service['url'] = str_replace(array('[url]', '[title]'), array($url, $title), $service['url']);
 
     $element['#value'] .= l($service['label'], $service['url'], $link_options);
   }
