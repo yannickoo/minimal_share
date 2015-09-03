@@ -107,7 +107,9 @@ function minimal_share_block_view($delta = '') {
  */
 function minimal_share_field($entity_type, $entity) {
   $uri = entity_uri($entity_type, $entity);
-  $url = url($uri['path'], array('absolute' => TRUE));
+  $front_page = variable_get('site_frontpage', 'node');
+  $path = $uri['path'] == $front_page ? '' : $uri['path'];
+  $url = url($path, array('absolute' => TRUE));
   $title = entity_label($entity_type, $entity);
   $settings = minimal_share_settings();
   list(, , $bundle) = entity_extract_ids($entity_type, $entity);
