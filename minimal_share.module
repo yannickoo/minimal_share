@@ -103,6 +103,45 @@ function minimal_share_block_view($delta = '') {
 }
 
 /**
+ * Implements hook_element_info().
+ */
+function minimal_share_element_info() {
+  return array(
+    'minimal_share_container' => array(
+      '#tag' => 'p',
+      '#attributes' => array(),
+      '#theme_wrappers' => array(
+        'minimal_share_container',
+      ),
+    ),
+    'minimal_share_item' => array(
+      '#theme' => 'minimal_share_item',
+      '#service_name' => NULL,
+      '#service' => NULL,
+      '#title' => NULL,
+      '#url' => NULL,
+      '#pre_render' => array(
+        'minimal_share_pre_render_item',
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_theme().
+ */
+function minimal_share_theme() {
+  return array(
+    'minimal_share_container' => array(
+      'render element' => 'element',
+    ),
+    'minimal_share_item' => array(
+      'render element' => 'element',
+    ),
+  );
+}
+
+/**
  * Extra field callback.
  */
 function minimal_share_field($entity_type, $entity) {
@@ -298,10 +337,8 @@ function minimal_share($url = '', $title = '', $settings = array()) {
   }
 
   $element = array(
-    '#type' => 'html_tag',
-    '#tag' => 'p',
+    '#type' => 'minimal_share_container',
     '#attributes' => array('class' => array('minimal-share')),
-    '#value' => '',
     '#attached' => array(
       'css' => array(
         drupal_get_path('module', 'minimal_share') . '/css/minimal-share.css',
@@ -313,84 +350,13 @@ function minimal_share($url = '', $title = '', $settings = array()) {
   );
 
   foreach ($settings['services'] as $service_name => $service) {
-    if (!$service['enabled']) {
-      continue;
-    }
-
-    // Set default label type.
-    if (!isset($service['label_type'])) {
-      $service['label_type'] = 'name';
-    }
-
-    // Load count only if necessary.
-    if ($service['label_type'] == 'name_count' || $service['label_type'] == 'custom' && strpos($service['custom'], '[count]') !== FALSE) {
-      $count = minimal_share_count($service_name, $url);
-    }
-
-    switch ($service['label_type']) {
-      case 'name':
-        $service['label'] = $service['title'];
-        break;
-
-      case 'icon':
-        $service['label'] = '';
-        $element['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-icons.css';
-        break;
-
-      case 'name_count':
-        $service['label'] = '<span class="title">' . $service['title'] . '</span>';
-
-        if ($count || !$count && !$service['hide_zero']) {
-          $service['label'] .= ' <span class="count">(' . $count . ')</span>';
-        }
-        break;
-
-      case 'custom':
-        // Replace [count] token with real count.
-        if (minimal_share_count_callback_exists($service) && strpos($service['custom'], '[count]') !== FALSE) {
-          $service['custom'] = str_replace('[count]', $count, $service['custom']);
-        }
-
-        $service['custom'] = check_plain($service['custom']);
-
-        // Replace [count] token with real count.
-        if (strpos($service['custom'], '[icon]') !== FALSE) {
-          $service['custom'] = str_replace('[icon]', '<span class="icon">&#' . $service['unicode'] . ';</span>', $service['custom']);
-          $element['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-icons.css';
-        }
-
-        $service['label'] = $service['custom'];
-        break;
-    }
-
-    $link_options = array(
-      'html' => TRUE,
-      'external' => TRUE,
-      'attributes' => array(
-        'class' => array($service_name),
-      ),
+    $element[$service_name] = array(
+      '#type' => 'minimal_share_item',
+      '#service_name' => $service_name,
+      '#service' => $service,
+      '#title' => $title,
+      '#url' => $url,
     );
-
-    if ($service['label_type'] == 'icon') {
-      $link_options['attributes']['class'][] = 'icon';
-    }
-
-    // Add data attributes for size.
-    foreach (array('width', 'height') as $property) {
-      if (isset($service['size'][$property])) {
-        $link_options['attributes']['data-' . $property] = $service['size'][$property];
-      }
-    }
-
-    // Add class to link if service is only enabled for mobile devices.
-    if (isset($service['mobile']) && $service['mobile']) {
-      $link_options['attributes']['class'][] = 'ms-mobile-only';
-    }
-
-    // Replace default values in the sharing URL.
-    $service['url'] = str_replace(array('[url]', '[title]'), array($url, $title), $service['url']);
-
-    $element['#value'] .= l($service['label'], $service['url'], $link_options);
   }
 
   return $element;
@@ -674,4 +640,129 @@ function minimal_share_linkedin_count($url) {
   $count = $data['count'];
 
   return $count;
+}
+
+/**
+ * Default implementation of theme('minimal_share_item').
+ */
+function minimal_share_pre_render_item($element) {
+  $service_name = $element['#service_name'];
+  $service = $element['#service'];
+  $url = $element['#url'];
+  $title = $element['#title'];
+
+  if (!$service['enabled']) {
+    return array();
+  }
+
+  // Set default label type.
+  if (!isset($service['label_type'])) {
+    $service['label_type'] = 'name';
+  }
+
+  // Load count only if necessary.
+  if ($service['label_type'] == 'name_count' || $service['label_type'] == 'custom' && strpos($service['custom'], '[count]') !== FALSE) {
+    $count = minimal_share_count($service_name, $url);
+  }
+
+  switch ($service['label_type']) {
+    case 'name':
+      $element['#title'] = $service['title'];
+      break;
+
+    case 'icon':
+      $element['#title'] = '';
+      $element['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-icons.css';
+      break;
+
+    case 'name_count':
+      $element['#title'] = '<span class="title">' . $service['title'] . '</span>';
+
+      if ($count || !$count && !$service['hide_zero']) {
+        $element['#title'] .= ' <span class="count">(' . $count . ')</span>';
+      }
+      break;
+
+    case 'custom':
+      $label = $service['custom'];
+
+      // Replace [count] token with real count.
+      if (minimal_share_count_callback_exists($service) && strpos($service['custom'], '[count]') !== FALSE) {
+        $label = str_replace('[count]', $count, $service['custom']);
+      }
+
+      $label = check_plain($label);
+
+      // Replace [count] token with real count.
+      if (strpos($service['custom'], '[icon]') !== FALSE) {
+        $label = str_replace('[icon]', '<span class="icon">&#' . $service['unicode'] . ';</span>', $label);
+        $element['#attached']['css'][] = drupal_get_path('module', 'minimal_share') . '/css/minimal-share-icons.css';
+      }
+
+      $element['#title'] = $label;
+      break;
+  }
+
+  $link_options = array(
+    'html' => TRUE,
+    'external' => TRUE,
+    'attributes' => array(
+      'class' => array($service_name),
+    ),
+  );
+
+  if ($service['label_type'] == 'icon') {
+    $link_options['attributes']['class'][] = 'icon';
+  }
+
+  // Add data attributes for size.
+  foreach (array('width', 'height') as $property) {
+    if (isset($service['size'][$property])) {
+      $link_options['attributes']['data-' . $property] = $service['size'][$property];
+    }
+  }
+
+  // Add class to link if service is only enabled for mobile devices.
+  if (isset($service['mobile']) && $service['mobile']) {
+    $link_options['attributes']['class'][] = 'ms-mobile-only';
+  }
+
+  // Replace default values in the sharing URL.
+  $element['#href'] = str_replace(array('[url]', '[title]'), array($url, $title), $service['url']);
+  $element['#options'] = $link_options;
+  return $element;
+}
+
+/**
+ * Renders minimal_share container.
+ */
+function theme_minimal_share_container($variables) {
+  $element = $variables['element'];
+
+  $attributes = isset($element['#attributes']) ? drupal_attributes($element['#attributes']) : '';
+  $output = '<' . $element['#tag'] . $attributes . '>';
+  if (isset($element['#value_prefix'])) {
+    $output .= $element['#value_prefix'];
+  }
+  $output .= $element['#children'];
+  if (isset($element['#value'])) {
+    $output .= $element['#value'];
+  }
+  if (isset($element['#value_suffix'])) {
+    $output .= $element['#value_suffix'];
+  }
+  $output .= '</' . $element['#tag'] . ">\n";
+  return $output;
+}
+
+/**
+ * Renders minimal_share item.
+ */
+function theme_minimal_share_item($variables) {
+  $element = $variables['element'];
+
+  if (isset($element['#title']) && isset($element['#href']) && isset($element['#options'])) {
+    return l($element['#title'], $element['#href'], $element['#options']);
+  }
+  return '';
 }
