@@ -1,0 +1,7 @@
+minimal_share.config:
+  title: 'Minimal Share'
+  route_name: minimal_share.config
+  description: 'Configure appearance of sharing links.'
+  parent: system.admin_config_system
+  weight: 99
+

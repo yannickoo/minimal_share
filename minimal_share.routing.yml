@@ -1,0 +1,10 @@
+minimal_share.config:
+  path: '/admin/config/minimal_share/config'
+  defaults:
+    _form: '\Drupal\minimal_share\Form\ConfigForm'
+    _title: 'Minimal Share'
+  requirements:
+    _permission: 'administer minimal share'
+  options:
+    _admin_route: TRUE
+

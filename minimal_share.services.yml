@@ -1,0 +1,8 @@
+services:
+  plugin.manager.minimal_share_provider.processor:
+    class: Drupal\minimal_share\Plugin\MinimalShareProviderManager
+    parent: default_plugin_manager
+  minimal_share.manager:
+    class: Drupal\minimal_share\MinimalShareManager
+    arguments: ["@config.factory", "@plugin.manager.minimal_share_provider.processor"]
+

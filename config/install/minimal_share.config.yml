@@ -1,0 +1,9 @@
+providers:
+  - facebook:
+      enabled: true
+  - twitter:
+      enabled: true
+  - google_plus:
+      enabled: true
+advanced:
+  icon_type: 'inline'

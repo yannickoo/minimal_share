@@ -1,22 +1,26 @@
+.minimal-share {
+  display: flex;
+}
+
 .minimal-share > * {
   display: inline-block;
-  margin-left: 0.3em;
   padding: 0.4em 0.5em;
   background-color: #ddd;
   color: #fff;
   text-decoration: none;
-  white-space: pre;
+  white-space: nowrap;
   -moz-user-select: none;
   -webkit-user-select: none;
   user-select: none;
+  border: 0;
+}
+
+.minimal-share > * + * {
+  margin-left: 5px;
 }
 
 .minimal-share > *:first-child {
   margin-left: 0;
-}
-
-.minimal-share .icon {
-  font-family: 'ms-icons';
 }
 
 .minimal-share > a:hover,
@@ -26,15 +30,23 @@
   text-decoration: none;
 }
 
+.minimal-share svg path {
+  fill: #fff;
+}
+
 .minimal-share > .facebook {
   background-color: #3b5998;
+}
+
+.minimal-share > .facebook-messenger {
+  background-color: #0084ff;
 }
 
 .minimal-share > .twitter {
   background-color: #0099d2;
 }
 
-.minimal-share > .gplus {
+.minimal-share > .google-plus {
   background-color: #db4a39;
 }
 
@@ -54,6 +66,10 @@
   background-color: #4dc247;
 }
 
+.minimal-share > .xing {
+  background-color: #005A5f;
+}
+
 .minimal-share > .email,
 .minimal-share > .print {
   color: #666;
@@ -64,6 +80,29 @@
   color: #666;
 }
 
+.minimal-share > .ms-mobile-only {
+  display: none;
+}
+
+.minimal-share > .ms-show {
+  display: inline-block;
+}
+
 .minimal-share > .ms-hidden {
   display: none;
+}
+
+.minimal-share > .ms-icon {
+  width: 20px;
+  height: 20px;
+  padding: 8px;
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.minimal-share > .ms-icon img,
+.minimal-share > .ms-icon svg {
+  width: 100%;
+  height: 100%;
 }

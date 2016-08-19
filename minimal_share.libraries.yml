@@ -1,0 +1,11 @@
+minimal-share:
+  version: VERSION
+  js:
+    assets/js/minimal-share.js: {}
+  css:
+    theme:
+      assets/css/minimal-share.css: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/modernizr

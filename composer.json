@@ -1,0 +1,14 @@
+{
+  "name": "drupal/minimal_share",
+  "type": "drupal-module",
+  "description": "Provides minimal share buttons for several services.",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/minimal_share",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/minimal_share",
+    "source": "http://cgit.drupalcode.org/minimal_share"
+  },
+  "require": { }
+}
