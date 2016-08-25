@@ -99,6 +99,7 @@
   background-size: 60%;
   background-repeat: no-repeat;
   background-position: center center;
+  box-sizing: content-box;
 }
 
 .minimal-share > .ms-icon img,
