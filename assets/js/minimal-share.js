@@ -14,7 +14,7 @@
         }
 
         // Show hidden mobile share links.
-        if ($this.hasClass('ms-mobile-only') && Modernizr.touchevents) {
+        if ($this.hasClass('ms-mobile-only') && (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch))) {
           $this.addClass('ms-show');
         }
 
