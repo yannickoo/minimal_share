@@ -8,4 +8,3 @@ minimal-share:
   dependencies:
     - core/jquery
     - core/drupal
-    - core/modernizr
