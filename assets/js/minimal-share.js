@@ -19,15 +19,21 @@
         }
 
         $this.bind('click', function (e) {
-          if (provider == 'print') {
+          if (provider === 'print') {
             window.print();
             e.preventDefault();
           }
           else if (size) {
-            var width = size.width, height = size.height, url = $this.attr('href');
-            var wx = (screen.width - width) >> 1, wy = (screen.height - height) >> 1;
+            var width = size.width;
+            var height = size.height;
+            var url = $this.attr('href');
+            var wx = (screen.width - width) >> 1;
+            var wy = (screen.height - height) >> 1;
+
             window.open(url, '', 'top=' + wy + ',left=' + wx + ',width=' + width + ',height=' + height);
+
             e.preventDefault();
+            e.stopPropagation();
           }
         });
       });
