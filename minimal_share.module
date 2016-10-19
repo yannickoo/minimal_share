@@ -189,7 +189,7 @@ function minimal_share_minimal_share_services() {
     ),
     'twitter' => array(
       'title' => t('Twitter'),
-      'url' => 'https://twitter.com/intent/tweet?status=[title]%20-%20[url]',
+      'url' => 'https://twitter.com/intent/tweet?text=[title]%20-%20[url]',
       'size' => array('width' => '600', 'height' => '260'),
       'icon' => TRUE,
       'unicode' => '59394',
