@@ -8,7 +8,7 @@ use Drupal\minimal_share\Plugin\MinimalShareProviderBase;
  * @MinimalShareProvider(
  *   id = "twitter",
  *   label = @Translation("Twitter"),
- *   url = "https://twitter.com/intent/tweet?status=[title]%20-%20[url]",
+ *   url = "https://twitter.com/intent/tweet?text=[title]&url=[url]",
  *   color = "#0099d2",
  *   size = {
  *     "width" = 600,
