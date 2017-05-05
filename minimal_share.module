@@ -15,6 +15,7 @@ function minimal_share_theme() {
   return [
     'minimal_share' => [
       'variables' => [
+        'title' => NULL,
         'providers' => NULL,
       ],
     ],
@@ -22,6 +23,7 @@ function minimal_share_theme() {
       'variables' => [
         'title' => NULL,
         'attributes' => NULL,
+        'provider_id' => NULL,
       ],
     ],
   ];

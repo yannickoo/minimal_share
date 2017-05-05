@@ -4,5 +4,5 @@ services:
     parent: default_plugin_manager
   minimal_share.manager:
     class: Drupal\minimal_share\MinimalShareManager
-    arguments: ["@config.factory", "@plugin.manager.minimal_share_provider.processor"]
+    arguments: ["@config.factory", "@plugin.manager.minimal_share_provider.processor", "@token"]
 
