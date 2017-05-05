@@ -10,7 +10,9 @@ use GuzzleHttp\Client;
  * @MinimalShareProvider(
  *   id = "linkedin",
  *   label = @Translation("LinkedIn"),
- *   url = "http://www.linkedin.com/shareArticle?mini=true&url=[url]&title=[title]",
+ *   url = "http://www.linkedin.com/shareArticle?mini=true&url=[url]&title=[title]&summary=[summary]",
+ *   title_max_length = 200,
+ *   summary_max_length = 256,
  *   color = "#007bb6",
  *   size = {
  *     "width" = 520,

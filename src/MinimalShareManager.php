@@ -10,6 +10,7 @@ use Drupal\Core\Entity\ContentEntityType;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Url;
+use Drupal\Core\Utility\Token;
 use Drupal\minimal_share\Plugin\MinimalShareProviderInterface;
 use Drupal\minimal_share\Plugin\MinimalShareProviderManager;
 
@@ -31,14 +32,21 @@ class MinimalShareManager {
   protected $providerManager;
 
   /**
+   * @var Token
+   */
+  protected $tokenService;
+
+  /**
    * MinimalShareManager constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactory $config_factory
    * @param \Drupal\minimal_share\Plugin\MinimalShareProviderManager $provider_manager
+   * @param \Drupal\Core\Utility\Token $token_service
    */
-  public function __construct(ConfigFactory $config_factory, MinimalShareProviderManager $provider_manager) {
+  public function __construct(ConfigFactory $config_factory, MinimalShareProviderManager $provider_manager, Token $token_service) {
     $this->config = $config_factory->get('minimal_share.config')->get();
     $this->providerManager = $provider_manager;
+    $this->tokenService = $token_service;
   }
 
   /**
@@ -224,7 +232,38 @@ class MinimalShareManager {
     return [
       'url' => $entity->toUrl('canonical', ['absolute' => TRUE])->toString(),
       'title' => $entity->label(),
+      'summary' => $this->buildShareSummary($entity),
     ];
+  }
+
+  /**
+   * Build a summary for the given entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *
+   * @return string
+   */
+  public function buildShareSummary(EntityInterface $entity) {
+    $entity_type = $entity->getEntityTypeId();
+    $token_name = NULL;
+    $token_type = NULL;
+    if ($entity_type === 'node') {
+      $token_type = 'node';
+      $token_name = 'summary';
+    }
+    elseif ($entity_type === 'taxonomy_term') {
+      $token_type = 'term';
+      $token_name = 'description';
+    }
+    if (isset($token_name) && isset($token_type)) {
+      $summary_token = '[' . $token_type . ':' . $token_name . ']';
+      $summary = $this->tokenService->replace($summary_token, [
+        $token_type => $entity,
+      ]);
+      if ($summary !== $summary_token) {
+        return strip_tags($summary);
+      }
+    }
   }
 
   /**
@@ -372,10 +411,30 @@ class MinimalShareManager {
     }
 
     $share_url = $provider['url'];
-    $title = $info['title'];
     $url = $info['url'];
 
-    $url = str_replace(['[url]', '[title]'], [$url, $title], $share_url);
+    // Title.
+    $title = '';
+    if (!empty($info['title'])) {
+      if (!empty($provider['title_max_length'])) {
+        $title = substr($info['title'], 0, $provider['title_max_length']);
+      }
+      $title = rawurlencode($title);
+    }
+
+    // Summary.
+    $summary = $title;
+    if (!empty($info['summary'])) {
+      $summary_max_length = !empty($provider['summary_max_length']) ? $provider['summary_max_length'] : 256;
+      $summary = rawurlencode(substr($info['summary'], 0, $summary_max_length));
+    }
+
+    // Replace tokens.
+    $url = str_replace(
+      ['[url]', '[title]', '[summary]'],
+      [$url, $title, $summary],
+      $share_url
+    );
 
     return $url;
   }
