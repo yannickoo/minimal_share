@@ -314,6 +314,7 @@ class MinimalShareManager {
       '#theme' => 'minimal_share_item',
       '#title' => $label,
       '#attributes' => $attributes,
+      '#provider_id' => $provider['id'],
     ];
 
     if (!empty($provider['size'])) {
