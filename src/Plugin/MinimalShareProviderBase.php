@@ -10,21 +10,14 @@ use Drupal\Component\Plugin\PluginBase;
 abstract class MinimalShareProviderBase extends PluginBase implements MinimalShareProviderInterface {
 
   /**
-   * Get share count for a specific URL.
-   *
-   * @param string $url
-   *   The URL to count.
-   * @return int
-   *   The amount of shares.
+   * {@inheritdoc}
    */
   public function getCount($url) {
     return 0;
   }
 
   /**
-   * Get icon path.
-   *
-   * @return string
+   * {@inheritdoc}
    */
   public function getIconPath() {
     return drupal_get_path('module', 'minimal_share') . '/assets/icons/';

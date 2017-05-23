@@ -9,7 +9,21 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
  */
 interface MinimalShareProviderInterface extends PluginInspectionInterface {
 
+  /**
+   * Get share count for a specific URL.
+   *
+   * @param string $url
+   *   The URL to count.
+   * @return int
+   *   The amount of shares.
+   */
+  public function getCount($url);
 
-  // Add get/set methods for your plugin type here.
+  /**
+   * Get icon path.
+   *
+   * @return string
+   */
+  public function getIconPath();
 
 }

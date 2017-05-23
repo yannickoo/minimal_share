@@ -76,8 +76,17 @@
 }
 
 .minimal-share > .email:hover,
-.minimal-share > .print:hover {
+.minimal-share > .email:focus,
+.minimal-share > .email:active,
+.minimal-share > .print:hover,
+.minimal-share > .print:focus,
+.minimal-share > .print:active {
   color: #666;
+}
+
+.minimal-share > .email path,
+.minimal-share > .print path {
+  fill: #666;
 }
 
 .minimal-share > .ms-mobile-only {

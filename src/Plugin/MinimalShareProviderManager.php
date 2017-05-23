@@ -11,7 +11,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
  */
 class MinimalShareProviderManager extends DefaultPluginManager {
 
-
   /**
    * Constructor for MinimalShareProviderManager objects.
    *

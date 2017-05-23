@@ -59,7 +59,8 @@ class MinimalShareManager {
    * @return bool
    */
   public function entityTypeEnabled($entity_type_id) {
-    return in_array($entity_type_id, $this->config['entity_types']);
+    $entity_types = isset($this->config['entity_types']) ? $this->config['entity_types'] : [];
+    return in_array($entity_type_id, $entity_types);
   }
 
   /**
@@ -210,6 +211,8 @@ class MinimalShareManager {
       }
     }
 
+    asort($list);
+
     return $list;
   }
 
@@ -292,6 +295,29 @@ class MinimalShareManager {
   }
 
   /**
+   * Build render array for a single provider item preview.
+   *
+   * @param array $provider
+   *   The provider array.
+   *
+   * @return array
+   */
+  public function buildProviderItemPreview($provider) {
+    $label = $this->getProviderLabel($provider);
+    $attributes = $this->getAttributes($provider);
+    // href attribute is not necessary for preview.
+    $attributes->removeAttribute('href');
+
+    $build = [
+      '#theme' => 'minimal_share_item_preview',
+      '#title' => $label,
+      '#attributes' => $attributes,
+    ];
+
+    return $build;
+  }
+
+  /**
    * @param array $provider
    *   The provider array.
    * @param string $url
@@ -299,7 +325,7 @@ class MinimalShareManager {
    *
    * @return array
    */
-  public function getProviderLabel($provider, $url) {
+  public function getProviderLabel($provider, $url = '') {
     $label = [];
 
     if (empty($provider['label_type'])) {
@@ -345,7 +371,7 @@ class MinimalShareManager {
           $count = '';
         }
 
-        $custom = str_replace('[count]', $count, $custom);
+        $custom = trim(str_replace('[count]', $count, $custom));
       }
 
       $label = [

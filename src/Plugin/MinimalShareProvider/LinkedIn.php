@@ -30,7 +30,12 @@ class LinkedIn extends MinimalShareProviderBase {
 
     /** @var Client $client */
     $client = \Drupal::httpClient();
-    $request = $client->get($count_url);
+
+    try {
+      $request = $client->get($count_url);
+    } catch (\Exception $e) {
+      return $count;
+    }
 
     $data = Json::decode($request->getBody());
     if (!empty($data['count'])) {

@@ -7,4 +7,18 @@ minimal-share:
       assets/css/minimal-share.css: {}
   dependencies:
     - core/jquery
+    - core/once
+    - core/drupal
+
+admin:
+  version: VERSION
+  js:
+    assets/js/minimal-share.admin.js: {}
+  css:
+    theme:
+      assets/css/minimal-share.admin.css: {}
+  dependencies:
+    - minimal_share/minimal-share
+    - core/jquery
+    - core/once
     - core/drupal

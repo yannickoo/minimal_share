@@ -27,9 +27,14 @@ class Facebook extends MinimalShareProviderBase {
     $count = 0;
     $count_url = 'http://graph.facebook.com/?id=' . $url;
 
-    /** @var Client $client */
+    /** @var \GuzzleHttp\Client $client */
     $client = \Drupal::httpClient();
-    $request = $client->get($count_url);
+
+    try {
+      $request = $client->get($count_url);
+    } catch (\Exception $e) {
+      return $count;
+    }
 
     $data = Json::decode($request->getBody());
     if (!empty($data['share']['share_count'])) {

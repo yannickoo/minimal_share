@@ -1,0 +1,12 @@
+.minimal-share-config .ms-mobile-only {
+  display: inline-block;
+}
+
+.minimal-share-config .form-radios .form-item {
+  display: flex;
+  align-items: center;
+}
+
+.minimal-share-config .form-radios label {
+  margin-left: 5px;
+}

@@ -68,6 +68,9 @@ class ConfigForm extends ConfigFormBase {
     $config = $this->manager->getConfig();
     $providers = $this->manager->getProviders(TRUE);
     $form['#tree'] = TRUE;
+    $form['#attached']['library'][] = 'minimal_share/admin';
+
+    $default_icon_type = isset($config['advanced']['icon_type']) ? $config['advanced']['icon_type'] : 'inline';
 
     $form['entity_types'] = [
       '#type' => 'checkboxes',
@@ -87,7 +90,12 @@ class ConfigForm extends ConfigFormBase {
       $form['providers'][$provider] = [
         '#type' => 'fieldset',
         '#title' => $definition['label'],
+        '#attributes' => ['class' => ['js-minimal-share__provider-wrapper']],
       ];
+
+      if (!empty($definition['mobile'])) {
+        $form['providers'][$provider]['#description'] = $this->t('This provider is only available for mobile devices.');
+      }
 
       $form['providers'][$provider]['enabled'] = [
         '#type' => 'checkbox',
@@ -99,15 +107,27 @@ class ConfigForm extends ConfigFormBase {
         '#type' => 'container',
       ];
 
-      // We use a random number for demonstrating the count labels.
-      $count = rand(1, 50);
+      $label_options = [];
+      $label_types = ['name', 'icon', 'name_count', 'custom'];
+      foreach ($label_types as $label_type) {
+        $custom_definition = $definition;
+        $custom_definition['label_type'] = $label_type;
 
-      $label_options = array(
-        'name' => $definition['label'],
-        'icon' => '',
-        'name_count' => $definition['label']->render() . ' (' . $count . ')',
-        'custom' => $this->t('Custom'),
-      );
+        $build = $this->manager->buildProviderItemPreview($custom_definition);
+
+        // Override title for custom label type.
+        if ($label_type == 'custom') {
+          $build['#title']['#markup'] = $this->t('Custom');
+        }
+
+        $label = [
+          '#prefix' => '<div class="minimal-share">',
+          '#suffix' => '</div>',
+          'label' => $build,
+        ];
+
+        $label_options[$label_type] = \Drupal::service('renderer')->render($label);
+      }
 
       // Add 'count' radio only if there is a count callback set.
       if (empty($definition['count'])) {
@@ -119,23 +139,10 @@ class ConfigForm extends ConfigFormBase {
         '#title' => $this->t('Label'),
         '#description' => $this->t('Set the label for @provider share links.', ['@provider' => $definition['label']]),
         '#options' => $label_options,
-        '#default_value' => !empty($providers[$provider]['label_type']) ? $providers[$provider]['label_type'] : 'name',
+        '#default_value' => !empty($definition['label_type']) ? $definition['label_type'] : 'name',
         '#states' => [
           'visible' => [
             'input[name="providers[' . $provider . '][enabled]"]' => ['checked' => TRUE],
-          ],
-        ],
-      ];
-
-      $form['providers'][$provider]['hide_zero'] = [
-        '#type' => 'checkbox',
-        '#title' => $this->t('Hide zero'),
-        '#description' => $this->t('Hide the share count if it is  zero.'),
-        '#default_value' => !empty($providers[$provider]['hide_zero']) ? $providers[$provider]['hide_zero'] : 0,
-        '#states' => [
-          'visible' => [
-            'input[name="providers[' . $provider . '][enabled]"]' => ['checked' => TRUE],
-            'input[name="providers[' . $provider . '][label_type]"]' => ['value' => 'name_count'],
           ],
         ],
       ];
@@ -144,7 +151,8 @@ class ConfigForm extends ConfigFormBase {
         '#type' => 'textfield',
         '#title' => t('Custom label'),
         '#description' => !empty($definition['count']) ? $this->t('Use <code>[count]</code> to display the sharing count.') : '',
-        '#default_value' => isset($service['custom']) ? $service['custom'] : '',
+        '#default_value' => isset($definition['custom']) ? $definition['custom'] : '',
+        '#attributes' => ['class' => ['js-minimal_share__label-custom']],
         '#states' => [
           'visible' => [
             'input[name="providers[' . $provider . '][enabled]"]' => ['checked' => TRUE],
@@ -157,6 +165,23 @@ class ConfigForm extends ConfigFormBase {
         ],
       ];
 
+      $form['providers'][$provider]['hide_zero'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Hide zero'),
+        '#description' => $this->t('Hide share count if it is zero.'),
+        '#default_value' => !empty($providers[$provider]['hide_zero']) ? $providers[$provider]['hide_zero'] : 0,
+        '#access' => !empty($definition['count']),
+        '#states' => [
+          'visible' => [
+            'input[name="providers[' . $provider . '][enabled]"]' => ['checked' => TRUE],
+            [
+              ['input[name="providers[' . $provider . '][label_type]"]' => ['value' => 'name_count']],
+              'or',
+              ['input[name="providers[' . $provider . '][label_type]"]' => ['value' => 'custom']],
+            ],
+          ],
+        ],
+      ];
     }
 
     $form['advanced'] = [
@@ -174,7 +199,7 @@ class ConfigForm extends ConfigFormBase {
       '#title' => t('Cache lifetime'),
       '#options' => $period,
       '#description' => $this->t('Cached counts will not be re-fetched until at least this much time has elapsed. When no cache lifetime is selected the page load takes much more time because counts are fetched on each request then.'),
-      '#default_value' => isset($settings['advanced']['cache_lifetime']) ? $settings['advanced']['cache_lifetime'] : 900,
+      '#default_value' => isset($config['advanced']['cache_lifetime']) ? $config['advanced']['cache_lifetime'] : 900,
     ];
 
     $form['advanced']['icon_type'] = [
@@ -186,7 +211,7 @@ class ConfigForm extends ConfigFormBase {
         'background' => $this->t('Background image'),
       ],
       '#description' => $this->t('Select which method should be used for embedding the icon.'),
-      '#default_value' => isset($settings['advanced']['icon_type']) ? $settings['advanced']['icon_type'] : 'inline',
+      '#default_value' => $default_icon_type,
     ];
 
     return parent::buildForm($form, $form_state);

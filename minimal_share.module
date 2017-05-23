@@ -24,6 +24,12 @@ function minimal_share_theme() {
         'attributes' => NULL,
       ],
     ],
+    'minimal_share_item_preview' => [
+      'variables' => [
+        'title' => NULL,
+        'attributes' => NULL,
+      ],
+    ],
   ];
 }
 
@@ -76,5 +82,12 @@ function minimal_share_entity_view(array &$build, EntityInterface $entity, Entit
  * Implements template_preprocess_HOOK().
  */
 function template_preprocess_minimal_share_item(&$variables) {
+  $variables['label'] = $variables['title'];
+}
+
+/**
+ * Implements template_preprocess_HOOK().
+ */
+function template_preprocess_minimal_share_item_preview(&$variables) {
   $variables['label'] = $variables['title'];
 }

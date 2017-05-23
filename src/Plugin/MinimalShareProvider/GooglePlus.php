@@ -27,9 +27,14 @@ class GooglePlus extends MinimalShareProviderBase {
 
     /** @var Client $client */
     $client = \Drupal::httpClient();
-    $request = $client->post($count_url, [
-      'json' => Json::decode('[{"method":"pos.plusones.get","id":"p","params":{"nolog":true,"id":"' . $url . '","source":"widget","userId":"@viewer","groupId":"@self"},"jsonrpc":"2.0","key":"p","apiVersion":"v1"}]'),
-    ]);
+
+    try {
+      $request = $client->post($count_url, [
+        'json' => Json::decode('[{"method":"pos.plusones.get","id":"p","params":{"nolog":true,"id":"' . $url . '","source":"widget","userId":"@viewer","groupId":"@self"},"jsonrpc":"2.0","key":"p","apiVersion":"v1"}]'),
+      ]);
+    } catch (\Exception $e) {
+      return $count;
+    }
 
     $data = Json::decode($request->getBody());
 
