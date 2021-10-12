@@ -2,5 +2,6 @@ name: Minimal Share
 type: module
 description: Provides minimal share buttons for several services.
 core: 8.x
+core_version_requirement: ^8 || ^9
 package: Custom
 configure: minimal_share.config
